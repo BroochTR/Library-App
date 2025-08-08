@@ -64,3 +64,121 @@ public class GoogleBooksService {
             return null;
         }
     }
+    
+    /**
+     * Parse JSON response từ Google Books API
+     */
+    private BookInfo parseBookInfo(String jsonResponse) {
+        try {
+            JSONObject root = new JSONObject(jsonResponse);
+            
+            // Kiểm tra xem có kết quả không
+            if (!root.has("items") || root.getJSONArray("items").length() == 0) {
+                return null;
+            }
+            
+            // Lấy item đầu tiên (thường là kết quả chính xác nhất)
+            JSONObject item = root.getJSONArray("items").getJSONObject(0);
+            JSONObject volumeInfo = item.getJSONObject("volumeInfo");
+            
+            BookInfo bookInfo = new BookInfo();
+            
+            // Lấy thông tin cơ bản
+            if (volumeInfo.has("title")) {
+                bookInfo.title = volumeInfo.getString("title");
+            }
+            
+            if (volumeInfo.has("authors")) {
+                JSONArray authors = volumeInfo.getJSONArray("authors");
+                StringBuilder authorString = new StringBuilder();
+                for (int i = 0; i < authors.length(); i++) {
+                    if (i > 0) authorString.append(", ");
+                    authorString.append(authors.getString(i));
+                }
+                bookInfo.author = authorString.toString();
+            }
+            
+            if (volumeInfo.has("publisher")) {
+                bookInfo.publisher = volumeInfo.getString("publisher");
+            }
+            
+            if (volumeInfo.has("publishedDate")) {
+                String publishedDate = volumeInfo.getString("publishedDate");
+                // Trích xuất năm từ ngày xuất bản (format có thể là YYYY hoặc YYYY-MM-DD)
+                try {
+                    bookInfo.year = Integer.parseInt(publishedDate.substring(0, 4));
+                } catch (Exception e) {
+                    bookInfo.year = 0;
+                }
+            }
+            
+            if (volumeInfo.has("pageCount")) {
+                bookInfo.pageCount = volumeInfo.getInt("pageCount");
+            }
+            
+            if (volumeInfo.has("categories")) {
+                JSONArray categories = volumeInfo.getJSONArray("categories");
+                if (categories.length() > 0) {
+                    bookInfo.genre = categories.getString(0);
+                }
+            }
+            
+            if (volumeInfo.has("description")) {
+                bookInfo.description = volumeInfo.getString("description");
+                // Giới hạn độ dài description
+                if (bookInfo.description.length() > 500) {
+                    bookInfo.description = bookInfo.description.substring(0, 500) + "...";
+                }
+            }
+            
+            if (volumeInfo.has("language")) {
+                bookInfo.language = volumeInfo.getString("language");
+            }
+            
+            // Lấy ISBN từ industryIdentifiers
+            if (volumeInfo.has("industryIdentifiers")) {
+                JSONArray identifiers = volumeInfo.getJSONArray("industryIdentifiers");
+                for (int i = 0; i < identifiers.length(); i++) {
+                    JSONObject identifier = identifiers.getJSONObject(i);
+                    String type = identifier.getString("type");
+                    if ("ISBN_13".equals(type) || "ISBN_10".equals(type)) {
+                        bookInfo.isbn = identifier.getString("identifier");
+                        break;
+                    }
+                }
+            }
+            
+            return bookInfo;
+            
+        } catch (Exception e) {
+            System.err.println("Error parsing Google Books API response: " + e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Class để chứa thông tin sách từ Google Books API
+     */
+    public static class BookInfo {
+        public String title;
+        public String author;
+        public String publisher;
+        public int year;
+        public int pageCount;
+        public String genre;
+        public String description;
+        public String language;
+        public String isbn;
+        
+        public boolean isValid() {
+            return title != null && !title.trim().isEmpty() &&
+                   author != null && !author.trim().isEmpty();
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("BookInfo{title='%s', author='%s', publisher='%s', year=%d, pages=%d}", 
+                               title, author, publisher, year, pageCount);
+        }
+    }
+} 
