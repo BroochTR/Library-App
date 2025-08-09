@@ -94,5 +94,132 @@ public class Library {
     public int getDefaultLoanDays() {
         return defaultLoanDays;
     }
-} 
+
+    // Quản lý sách
+        public boolean addDocument(Document document) {
+    if (document == null) {
+        return false;
+    }
+    
+    if (document.getId() == null || document.getId().isEmpty()) {
+        document.setId("DOC" + String.format("%04d", nextDocumentId++));
+    }
+    
+    if (documentRepository.findById(document.getId()) != null) {
+        return false;
+    }
+    
+    return documentRepository.save(document);
+}
+
+public boolean removeDocument(String documentId) {
+    if (documentId == null || documentRepository.findById(documentId) == null) {
+        return false;
+    }
+    
+    if (isDocumentBorrowed(documentId)) {
+        return false;
+    }
+    
+    List<Review> documentReviews = reviewRepository.findByDocumentId(documentId);
+    for (Review review : documentReviews) {
+        reviewRepository.delete(review.getId());
+    }
+    
+    return documentRepository.delete(documentId);
+}
+
+public boolean updateDocument(Document document) {
+    if (document == null || document.getId() == null || 
+        documentRepository.findById(document.getId()) == null) {
+        return false;
+    }
+    
+    return documentRepository.update(document);
+}
+
+public Document getDocument(String documentId) {
+    return documentRepository.findById(documentId);
+}
+
+public List<Document> getAllDocuments() {
+    return documentRepository.findAll();
+}
+
+public List<Document> searchDocumentsByTitle(String title) {
+    return documentRepository.findByTitle(title);
+}
+
+public List<Document> searchDocumentsByAuthor(String author) {
+    return documentRepository.findByAuthor(author);
+}
+
+public List<Document> searchDocumentsByGenre(String genre) {
+    return documentRepository.findByGenre(genre);
+}
+
+public List<Document> getAvailableDocuments() {
+    return documentRepository.findAvailable();
+}
+
+public List<Document> getDocumentsByType(Class<? extends Document> type) {
+    return getAllDocuments();
+}
+
+public boolean addUser(User user) {
+    if (user == null) {
+        return false;
+    }
+    
+    if (user.getId() == null || user.getId().isEmpty()) {
+        user.setId("USER" + String.format("%04d", nextUserId++));
+    }
+    
+    if (userRepository.findById(user.getId()) != null) {
+        return false;
+    }
+    
+    return userRepository.save(user);
+}
+
+public boolean removeUser(String userId) {
+    if (userId == null || userRepository.findById(userId) == null) {
+        return false;
+    }
+    
+    User user = userRepository.findById(userId);
+    if (user.getBorrowedCount() > 0) {
+        return false;
+    }
+    
+    List<Review> userReviews = reviewRepository.findByUserId(userId);
+    for (Review review : userReviews) {
+        reviewRepository.delete(review.getId());
+    }
+    
+    return userRepository.delete(userId);
+}
+
+public boolean updateUser(User user) {
+    if (user == null || user.getId() == null || 
+        userRepository.findById(user.getId()) == null) {
+        return false;
+    }
+    
+    return userRepository.update(user);
+}
+
+public User getUser(String userId) {
+    return userRepository.findById(userId);
+}
+
+public List<User> getAllUsers() {
+    return userRepository.findAll();
+}
+
+public List<User> searchUsersByName(String name) {
+    return userRepository.findByName(name);
+}} 
+
+
 
