@@ -219,7 +219,180 @@ public List<User> getAllUsers() {
 
 public List<User> searchUsersByName(String name) {
     return userRepository.findByName(name);
-}} 
+}
+public String borrowDocument(String userId, String documentId) {
+    User user = userRepository.findById(userId);
+    Document document = documentRepository.findById(documentId);
+    
+    if (user == null || document == null) {
+        return null;
+    }
+    
+    if (!user.isActive() || !user.canBorrowMore()) {
+        return null;
+    }
+    
+    boolean canBorrow = document.isAvailable();
+    
+    if (!canBorrow) {
+        return null;
+    }
+    
+    String transactionId = "TXN" + String.format("%04d", nextTransactionId++);
+    LoanTransaction transaction = new LoanTransaction(transactionId, userId, documentId, defaultLoanDays);
+    
+    user.borrowDocument(documentId);
+    document.borrowOne();
+    
+    userRepository.update(user);
+    documentRepository.updateQuantity(documentId, document.getAvailableQuantity());
+    transactionRepository.save(transaction);
+    
+    return transactionId;
+}
+
+public boolean returnDocument(String transactionId) {
+    LoanTransaction transaction = transactionRepository.findById(transactionId);
+    if (transaction == null || transaction.getStatus() != LoanTransaction.TransactionStatus.ACTIVE) {
+        return false;
+    }
+    
+    User user = userRepository.findById(transaction.getUserId());
+    Document document = documentRepository.findById(transaction.getDocumentId());
+    
+    if (user == null || document == null) {
+        return false;
+    }
+    
+    if (transaction.isOverdue()) {
+        double fine = transaction.calculateFine(dailyFineRate);
+        transaction.setFineAmount(fine);
+    }
+    
+    transaction.returnDocument();
+    user.returnDocument(transaction.getDocumentId());
+    document.returnOne();
+    
+    transactionRepository.update(transaction);
+    userRepository.update(user);
+    documentRepository.updateQuantity(document.getId(), document.getAvailableQuantity());
+    
+    return true;
+}
+
+public boolean renewLoan(String transactionId) {
+    LoanTransaction transaction = transactionRepository.findById(transactionId);
+    if (transaction == null) {
+        return false;
+    }
+    
+    boolean renewed = transaction.renew(defaultLoanDays);
+    if (renewed) {
+        transactionRepository.update(transaction);
+    }
+    return renewed;
+}
+
+public boolean isDocumentBorrowed(String documentId) {
+    return transactionRepository.isDocumentBorrowed(documentId);
+}
+
+public List<LoanTransaction> getUserActiveLoans(String userId) {
+    return transactionRepository.findActiveTransactionsByUserId(userId);
+}
+
+public List<LoanTransaction> getOverdueTransactions() {
+    return transactionRepository.findOverdueTransactions();
+}
+
+public List<LoanTransaction> getAllTransactions() {
+    return transactionRepository.findAll();
+}
+
+public boolean addReview(String userId, String documentId, int rating, String comment) {
+    if (userRepository.findById(userId) == null || documentRepository.findById(documentId) == null) {
+        return false;
+    }
+    
+    if (reviewRepository.hasUserReviewed(userId, documentId)) {
+        return false;
+    }
+    
+    String reviewId = "REV" + String.format("%04d", nextReviewId++);
+    
+    Review review = new Review(reviewId, userId, documentId, rating, comment);
+    return reviewRepository.save(review);
+}
+
+public List<Review> getDocumentReviews(String documentId) {
+    return reviewRepository.findByDocumentId(documentId);
+}
+
+public double getDocumentAverageRating(String documentId) {
+    return reviewRepository.getAverageRating(documentId);
+}
+
+public boolean markReviewAsHelpful(String reviewId) {
+    Review review = reviewRepository.findById(reviewId);
+    if (review == null) {
+        return false;
+    }
+    
+    review.addHelpfulVote();
+    return reviewRepository.update(review);
+}
+
+public List<Document> getRecommendedDocuments(String userId) {
+    User user = userRepository.findById(userId);
+    if (user == null || user.getFavoriteGenres().isEmpty()) {
+        return getPopularDocuments();
+    }
+    
+    List<Document> recommended = new ArrayList<>();
+    for (String genre : user.getFavoriteGenres()) {
+        List<Document> genreDocuments = documentRepository.findByGenre(genre).stream()
+                .filter(Document::isAvailable)
+                .collect(Collectors.toList());
+        recommended.addAll(genreDocuments);
+    }
+    
+    return recommended.stream()
+            .distinct()
+            .sorted((d1, d2) -> Double.compare(getDocumentAverageRating(d2.getId()), 
+                                             getDocumentAverageRating(d1.getId())))
+            .limit(10)
+            .collect(Collectors.toList());
+}
+
+public List<Document> getPopularDocuments() {
+    return documentRepository.findAvailable().stream()
+            .sorted((d1, d2) -> Double.compare(getDocumentAverageRating(d2.getId()), 
+                                             getDocumentAverageRating(d1.getId())))
+            .limit(10)
+            .collect(Collectors.toList());
+}
+
+public Map<String, Object> getLibraryStatistics() {
+    Map<String, Object> stats = new HashMap<>();
+    
+    List<Document> allDocuments = documentRepository.findAll();
+    List<Document> availableDocuments = documentRepository.findAvailable();
+    List<User> allUsers = userRepository.findAll();
+    List<LoanTransaction> allTransactions = transactionRepository.findAll();
+    List<LoanTransaction> overdueTransactions = transactionRepository.findOverdueTransactions();
+    
+    stats.put("totalDocuments", allDocuments.size());
+    stats.put("availableDocuments", availableDocuments.size());
+    stats.put("borrowedDocuments", allDocuments.size() - availableDocuments.size());
+    stats.put("totalUsers", allUsers.size());
+    stats.put("activeUsers", allUsers.stream().filter(User::isActive).count());
+    stats.put("totalTransactions", allTransactions.size());
+    stats.put("overdueTransactions", overdueTransactions.size());
+    stats.put("totalReviews", reviewRepository.findAll().size());
+    
+    return stats;
+}
+}
 
 
 
