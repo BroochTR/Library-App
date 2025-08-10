@@ -1,0 +1,60 @@
+package com.library.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+/**
+ * Quản lý kết nối cơ sở dữ liệu.
+ * Xử lý kết nối MySQL sử dụng mẫu Singleton
+ */
+public class DatabaseConnection {
+    private static final String URL = "jdbc:mysql://localhost:3306/library_management";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "Minh1234*"; 
+    
+    private static Connection connection = null;
+    
+    /**
+     * Lấy kết nối đến cơ sở dữ liệu.
+     */
+    public static Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+                System.out.println("Kết nối cơ sở dữ liệu thành công!");
+            }
+            return connection;
+        } catch (ClassNotFoundException e) {
+            System.err.println("Không tìm thấy MySQL Driver: " + e.getMessage());
+            return null;
+        } catch (SQLException e) {
+            System.err.println("Kết nối cơ sở dữ liệu thất bại: " + e.getMessage());
+            System.err.println("Vui lòng kiểm tra MySQL đã chạy và thông tin đăng nhập chính xác");
+            return null;
+        }
+    }
+    
+    /**
+     * Đóng kết nối cơ sở dữ liệu
+     */
+    public static void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                System.out.println("Đã đóng kết nối cơ sở dữ liệu.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi đóng kết nối: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Kiểm tra kết nối cơ sở dữ liệu
+     */
+    public static boolean testConnection() {
+        Connection conn = getConnection();
+        return conn != null;
+    }
+}
