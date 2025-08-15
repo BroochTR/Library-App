@@ -20,12 +20,10 @@ public class DatabaseConnection {
      */
     public static Connection getConnection() {
         try {
-            if (connection == null || connection.isClosed()) {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-                System.out.println("Kết nối cơ sở dữ liệu thành công!");
-            }
-            return connection;
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection newConnection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            System.out.println("Successfully connected to the database!");
+            return newConnection;
         } catch (ClassNotFoundException e) {
             System.err.println("Không tìm thấy MySQL Driver: " + e.getMessage());
             return null;
@@ -54,7 +52,23 @@ public class DatabaseConnection {
      * Kiểm tra kết nối cơ sở dữ liệu
      */
     public static boolean testConnection() {
-        Connection conn = getConnection();
-        return conn != null;
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            if (conn != null && !conn.isClosed()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Test connection error: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing test connection: " + e.getMessage());
+                }
+            }
+        }
+        return false;
     }
 }
