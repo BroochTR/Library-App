@@ -1,5 +1,3 @@
-package com.library.repository;
-
 import com.library.model.Review;
 import com.library.database.DatabaseConnection;
 import java.sql.*;
