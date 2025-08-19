@@ -1,11 +1,11 @@
 # Library-App
 BTL-OOP-INT2204 60
 ## Các thành viên và mức độ đóng góp:
-
 - Trần Trọng Thịnh: 33.3% 
 - Hoàng Đức Minh: 33.3%  
-- Đặng Hoàng Minh Nghĩa: 33.3%  
-
+- Đặng Hoàng Minh Nghĩa: 33.3%
+## UML Diagram: 
+https://lucid.app/lucidchart/3aa52b9d-8b18-4c73-be65-1495eea71409/edit?viewport_loc=-3486%2C-2684%2C10194%2C4130%2C0_0&invitationId=inv_e23030b8-8f4a-457a-99d5-1692e5a9bdba
 ## 📚 Hệ Thống Quản Lý Thư Viện - Ứng Dụng Desktop Java
 Một ứng dụng desktop được phát triển bằng Java Swing để quản lý hoạt động thư viện một cách hiệu quả và chuyên nghiệp. Dự án này áp dụng các nguyên tắc lập trình hướng đối tượng (OOP) và các mẫu thiết kế phần mềm hiện đại, tạo ra một giải pháp quản lý thư viện đầy đủ tính năng với giao diện thân thiện và kiến trúc mở rộng.
 ## 🎯 Mục Tiêu Dự Án
@@ -35,7 +35,8 @@ Hệ thống được thiết kế để đáp ứng nhu cầu quản lý thư v
 - Báo cáo lưu thông tài liệu
 - Giám sát giao dịch quá hạn
 ## 🏗️ Tổng Quan Kiến Trúc
-## Mẫu Model-View-Controller (MVC)
+### Mẫu Model-View-Controller (MVC)
+<pre>
 src/main/java/com/library/
 ├── model/                  # Tầng Logic Nghiệp Vụ
 │   ├── Library.java       # Logic nghiệp vụ chính 
@@ -58,5 +59,6 @@ src/main/java/com/library/
 ├── service/              # Tầng Dịch Vụ Ngoài
 │   └── GoogleBooksService.java # Tích hợp Google Books API
 └── database/             # Tầng Cơ Sở Dữ Liệu
-    └── DatabaseConnection.java # Quản lý kết nối
+    └── DatabaseConnection.java # Quản lý kết nối 
+    </pre>
 
