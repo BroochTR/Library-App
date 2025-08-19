@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Panel để quản lý tài liệu (sách và luận văn)
+ * Panel để quản lý tài liệu 
  */
 public class DocumentPanel extends JPanel implements RefreshablePanel {
     private Library library;
@@ -31,15 +31,12 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         setBackground(UITheme.BACKGROUND_PRIMARY);
         setBorder(UITheme.createTitledBorder("Document Management"));
         
-        // Tạo panel trên cùng cho tìm kiếm và bộ lọc
         JPanel topPanel = createTopPanel();
         add(topPanel, BorderLayout.NORTH);
         
-        // Tạo panel giữa với bảng dữ liệu
         JPanel centerPanel = createCenterPanel();
         add(centerPanel, BorderLayout.CENTER);
         
-        // Tạo panel dưới cùng với các nút
         JPanel bottomPanel = createBottomPanel();
         add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -48,7 +45,6 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         JPanel panel = UITheme.createCard();
         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        // Các thành phần tìm kiếm
         JLabel searchLabel = new JLabel("Search:");
         searchLabel.setFont(UITheme.FONT_TITLE);
         searchLabel.setForeground(UITheme.TEXT_PRIMARY);
@@ -79,7 +75,6 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         
         panel.add(Box.createHorizontalStrut(20));
         
-        // Lọc theo loại tài liệu
         JLabel typeLabel = new JLabel("Type:");
         typeLabel.setFont(UITheme.FONT_TITLE);
         typeLabel.setForeground(UITheme.TEXT_PRIMARY);
@@ -97,12 +92,11 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Tạo bảng dữ liệu
         String[] columnNames = {"ID", "Title", "Author", "Genre", "Year", "Status", "Details"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Làm cho bảng chỉ đọc
+                return false; // Đặt bảng ở chế độ chỉ đọc
             }
         };
         
@@ -111,7 +105,6 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         documentTable.setRowHeight(25);
         documentTable.getTableHeader().setReorderingAllowed(false);
         
-        // Thiết lập độ rộng cột
         documentTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // ID
         documentTable.getColumnModel().getColumn(1).setPreferredWidth(250); // Title
         documentTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Author
@@ -128,10 +121,10 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
     }
     
     private JPanel createBottomPanel() {
-        JPanel panel = UITheme.createPanel(new FlowLayout(FlowLayout.LEFT, 10, 5)); // Thêm khoảng cách giữa các nút
+        JPanel panel = UITheme.createPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM));
         
-        JButton addBookButton = UITheme.createPrimaryButton("+ Add Book");
+        JButton addBookButton = UITheme.createPrimaryButton("Add");
         addBookButton.addActionListener(e -> showAddBookDialog());
         panel.add(addBookButton);
         
@@ -139,11 +132,11 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         viewButton.addActionListener(e -> showDocumentDetails());
         panel.add(viewButton);
         
-        JButton editButton = UITheme.createWarningButton("Edit Document");
+        JButton editButton = UITheme.createWarningButton("Edit");
         editButton.addActionListener(e -> showEditDialog());
         panel.add(editButton);
         
-        JButton deleteButton = UITheme.createDangerButton("Delete Document");
+        JButton deleteButton = UITheme.createDangerButton("Delete");
         deleteButton.addActionListener(e -> deleteDocument());
         panel.add(deleteButton);
         
@@ -156,14 +149,14 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
     
     @Override
     public void refreshData() {
-        tableModel.setRowCount(0); // Xóa dữ liệu hiện tại
+        tableModel.setRowCount(0); 
         
         List<Document> documents;
         String selectedType = (String) documentTypeCombo.getSelectedItem();
         
         switch (selectedType) {
             case "Books Only":
-                documents = library.getAllDocuments(); // Tất cả tài liệu hiện tại đều là sách
+                documents = library.getAllDocuments(); 
                 break;
             default:
                 documents = library.getAllDocuments();
@@ -172,7 +165,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         
         for (Document doc : documents) {
             String details = "ISBN: " + doc.getIsbn() + " | " + doc.getPageCount() + " pages";
-            String status = doc.getQuantityStatus(); // Hiển thị định dạng có sẵn/tổng số
+            String status = doc.getQuantityStatus(); 
             
             Object[] row = {
                 doc.getId(),
@@ -208,7 +201,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
             case "Genre":
                 results = library.searchDocumentsByGenre(searchText);
                 break;
-            default: // "Tất cả"
+            default: 
                 results = library.getAllDocuments().stream()
                     .filter(doc -> doc.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
                                   doc.getAuthor().toLowerCase().contains(searchText.toLowerCase()) ||
@@ -219,7 +212,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         
         for (Document doc : results) {
             String details = "ISBN: " + doc.getIsbn() + " | " + doc.getPageCount() + " pages";
-            String status = doc.getQuantityStatus(); // Hiển thị định dạng có sẵn/tổng số
+            String status = doc.getQuantityStatus(); 
             
             Object[] row = {
                 doc.getId(),
@@ -240,7 +233,6 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         
-        // Tạo các trường nhập liệu
         JTextField titleField = new JTextField(20);
         JTextField authorField = new JTextField(20);
         JTextField genreField = new JTextField(15);
@@ -251,7 +243,6 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         JTextField quantityField = new JTextField("1", 10);
         JTextArea descriptionArea = new JTextArea(3, 20);
         
-        // Thêm các thành phần vào dialog
         gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
         dialog.add(new JLabel("Title:"), gbc);
         gbc.gridx = 1;
@@ -277,111 +268,12 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         gbc.gridx = 1;
         dialog.add(isbnField, gbc);
         
-        // Nút tự động điền
         gbc.gridx = 2; gbc.gridy = 4;
-        JButton autoFillButton = UITheme.createSuccessButton("Auto Fill from ISBN");
-        autoFillButton.setToolTipText("Tự động điền thông tin từ Google Books API");
-        autoFillButton.addActionListener(e -> autoFillFromISBN(isbnField, titleField, authorField, genreField, yearField, publisherField, pagesField, descriptionArea, dialog));
-        dialog.add(autoFillButton, gbc);
-        
-        gbc.gridx = 0; gbc.gridy = 5;
-        dialog.add(new JLabel("Publisher:"), gbc);
-        gbc.gridx = 1;
-        dialog.add(publisherField, gbc);
-        
-        gbc.gridx = 0; gbc.gridy = 6;
-        dialog.add(new JLabel("Pages:"), gbc);
-        gbc.gridx = 1;
-        dialog.add(pagesField, gbc);
-        
-        gbc.gridx = 0; gbc.gridy = 7;
-        dialog.add(new JLabel("Number:"), gbc);
-        gbc.gridx = 1;
-        dialog.add(quantityField, gbc);
-        
-        gbc.gridx = 0; gbc.gridy = 8;
-        dialog.add(new JLabel("Description:"), gbc);
-        gbc.gridx = 1;
-        dialog.add(new JScrollPane(descriptionArea), gbc);
-        
-        // Các nút
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        JButton saveButton = UITheme.createPrimaryButton("Save Book");
-        JButton cancelButton = UITheme.createSecondaryButton("Cancel");
-        
-        saveButton.addActionListener(e -> {
-            try {
-                String title = titleField.getText().trim();
-                String author = authorField.getText().trim();
-                String isbn = isbnField.getText().trim();
-                int quantity = Integer.parseInt(quantityField.getText().trim());
-                
-                if (title.isEmpty() || author.isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog, "Tiêu đề và Tác giả là bắt buộc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                if (quantity <= 0) {
-                    JOptionPane.showMessageDialog(dialog, "Số lượng phải lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                
-                // Kiểm tra xem tài liệu đã tồn tại chưa (theo tiêu đề, tác giả và ISBN)
-                Document existingDoc = findExistingDocument(title, author, isbn);
-                
-                if (existingDoc != null) {
-                    // Tài liệu đã tồn tại, thêm số lượng
-                    existingDoc.addQuantity(quantity);
-                    if (library.updateDocument(existingDoc)) {
-                        refreshData();
-                        dialog.dispose();
-                        JOptionPane.showMessageDialog(this, 
-                            String.format("Added %d books. Total quantity: %d", quantity, existingDoc.getTotalQuantity()));
-                    } else {
-                        JOptionPane.showMessageDialog(dialog, "Không thể cập nhật số lượng sách!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    }
-                } else {
-                    // Tài liệu mới
-                    Document doc = new Document("", title, author,
-                                       genreField.getText(), Integer.parseInt(yearField.getText()),
-                                       isbn, publisherField.getText(),
-                                       Integer.parseInt(pagesField.getText()), quantity);
-                    doc.setDescription(descriptionArea.getText());
-                    
-                    if (library.addDocument(doc)) {
-                        refreshData();
-                        dialog.dispose();
-                        JOptionPane.showMessageDialog(this, String.format("Thêm tài liệu thành công! Số lượng: %d", quantity));
-                    } else {
-                        JOptionPane.showMessageDialog(dialog, "Không thể thêm tài liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Vui lòng nhập số hợp lệ cho năm, số trang và số lượng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        
-        cancelButton.addActionListener(e -> dialog.dispose());
-        
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-        
-        gbc.gridx = 0; gbc.gridy = 9; gbc.gridwidth = 2;
-        dialog.add(buttonPanel, gbc);
-        
-        dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }
-            gbc.gridx = 0; gbc.gridy = 4;
-        dialog.add(new JLabel("ISBN:"), gbc);
-        gbc.gridx = 1;
-        dialog.add(isbnField, gbc);
-        
-        gbc.gridx = 2; gbc.gridy = 4;
-        JButton autoFillButton = UITheme.createSuccessButton("Auto Fill from ISBN");
-        autoFillButton.setToolTipText("Tự động điền thông tin từ Google Books API");
-        autoFillButton.addActionListener(e -> autoFillFromISBN(isbnField, titleField, authorField, genreField, yearField, publisherField, pagesField, descriptionArea, dialog));
+        JButton autoFillButton = UITheme.createSuccessButton("Auto Fill");
+        autoFillButton.setToolTipText("Auto fill information from Google Books API");
+        autoFillButton.addActionListener(e -> autoFillFromISBN(
+            isbnField, titleField, authorField, genreField, yearField, publisherField, pagesField, descriptionArea, dialog
+        ));
         dialog.add(autoFillButton, gbc);
         
         gbc.gridx = 0; gbc.gridy = 5;
@@ -425,6 +317,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
                     return;
                 }
                 
+                // Kiểm tra xem tài liệu đã tồn tại 
                 Document existingDoc = findExistingDocument(title, author, isbn);
                 
                 if (existingDoc != null) {
@@ -433,27 +326,34 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
                         refreshData();
                         dialog.dispose();
                         JOptionPane.showMessageDialog(this, 
-                            String.format("Added %d books. Total quantity: %d", quantity, existingDoc.getTotalQuantity()));
+                            String.format("Added %d books. Total quantity: %d", quantity, existingDoc.getTotalQuantity())
+                        );
                     } else {
                         JOptionPane.showMessageDialog(dialog, "Failed to update book quantity!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     Document doc = new Document("", title, author,
-                                       genreField.getText(), Integer.parseInt(yearField.getText()),
-                                       isbn, publisherField.getText(),
-                                       Integer.parseInt(pagesField.getText()), quantity);
+                       genreField.getText(), Integer.parseInt(yearField.getText()),
+                       isbn, publisherField.getText(),
+                       Integer.parseInt(pagesField.getText()), quantity);
                     doc.setDescription(descriptionArea.getText());
                     
                     if (library.addDocument(doc)) {
                         refreshData();
                         dialog.dispose();
-                        JOptionPane.showMessageDialog(this, String.format("Document added successfully! Quantity: %d", quantity));
+                        JOptionPane.showMessageDialog(this, 
+                            String.format("Document added successfully! Quantity: %d", quantity)
+                        );
                     } else {
                         JOptionPane.showMessageDialog(dialog, "Failed to add document!", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(dialog, "Please enter valid numbers for year, pages, and number!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, 
+                    "Please enter valid numbers for year, pages, and number!", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE
+                );
             }
         });
         
@@ -463,18 +363,20 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         buttonPanel.add(cancelButton);
         
         gbc.gridx = 0; gbc.gridy = 9; gbc.gridwidth = 2;
-        dialog.add(buttonPanel, gbc);
-        
+        dialog.add(buttonPanel, gbc);        
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
     
+    /**
+     * Tìm tài liệu đã tồn tại theo tiêu đề, tác giả và ISBN.
+     */
     private Document findExistingDocument(String title, String author, String isbn) {
         for (Document doc : library.getAllDocuments()) {
             boolean titleMatch = doc.getTitle().equalsIgnoreCase(title);
             boolean authorMatch = doc.getAuthor().equalsIgnoreCase(author);
-            boolean isbnMatch = (isbn.isEmpty() && doc.getIsbn().isEmpty()) || 
+            boolean isbnMatch = (isbn.isEmpty() && doc.getIsbn().isEmpty()) ||
                                doc.getIsbn().equalsIgnoreCase(isbn);
             
             if (titleMatch && authorMatch && isbnMatch) {
@@ -504,7 +406,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
             details.append("Genre: ").append(document.getGenre()).append("\n");
             details.append("Year: ").append(document.getYear()).append("\n");
             
-            String statusDisplay = document.getQuantityStatus();
+            String statusDisplay = document.getQuantityStatus(); 
             details.append("Status: ").append(statusDisplay).append("\n");
             details.append("Added Date: ").append(document.getAddedDate()).append("\n");
             
@@ -538,7 +440,9 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
             
             JTextArea textArea = new JTextArea(details.toString());
             textArea.setEditable(false);
-            textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            textArea.setFont(new Font("Arial", Font.PLAIN, 13));
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
             
             JScrollPane scrollPane = new JScrollPane(textArea);
             scrollPane.setPreferredSize(new Dimension(500, 400));
@@ -562,11 +466,14 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
             return;
         }
         
+        // Hiện tất cả tài liệu có thể được chỉnh sửa
+        
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Book", true);
         dialog.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         
+        // Tạo trường nhập với giá trị hiện tại
         JTextField titleField = new JTextField(document.getTitle(), 20);
         JTextField authorField = new JTextField(document.getAuthor(), 20);
         JTextField genreField = new JTextField(document.getGenre(), 15);
@@ -622,6 +529,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         
         saveButton.addActionListener(e -> {
             try {
+                // Kiểm tra các trường bắt buộc
                 String title = titleField.getText().trim();
                 String author = authorField.getText().trim();
                 
@@ -682,7 +590,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
             JOptionPane.WARNING_MESSAGE
         );
         
-        if (result == JOptionPane.YES_OPTION) {
+        if (result == JOptionPane.YESOption) {
             if (library.removeDocument(documentId)) {
                 refreshData();
                 JOptionPane.showMessageDialog(this, "Document deleted successfully!");
@@ -692,23 +600,26 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         }
     }
     
-    private void autoFillFromISBN(JTextField isbnField, JTextField titleField, JTextField authorField, 
-                                  JTextField genreField, JTextField yearField, JTextField publisherField, 
+    /**
+     * Tự động điền thông tin sách từ ISBN sử dụng Google Books API.
+     */
+    private void autoFillFromISBN(JTextField isbnField, JTextField titleField, JTextField authorField,
+                                  JTextField genreField, JTextField yearField, JTextField publisherField,
                                   JTextField pagesField, JTextArea descriptionArea, JDialog parentDialog) {
         String isbn = isbnField.getText().trim();
         if (isbn.isEmpty()) {
-            JOptionPane.showMessageDialog(parentDialog, "Vui lòng nhập ISBN trước khi Auto Fill!", "Thiếu ISBN", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(parentDialog, "Please enter ISBN before Auto Fill!", "ISBN missing", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        JDialog loadingDialog = new JDialog(parentDialog, "Đang tìm kiếm...", true);
-        JLabel loadingLabel = new JLabel("Đang tìm kiếm thông tin sách từ Google Books API...", JLabel.CENTER);
+
+        JDialog loadingDialog = new JDialog(parentDialog, "Finding...", true);
+        JLabel loadingLabel = new JLabel("Waiting...", JLabel.CENTER);
         loadingLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         loadingDialog.add(loadingLabel);
         loadingDialog.pack();
         loadingDialog.setLocationRelativeTo(parentDialog);
         
-        SwingWorker<GoogleBooksService.BookInfo, Void> worker = new SwingWorker<GoogleBooksService.BookInfo, Void>() {
+        SwingWorker<GoogleBooksService.BookInfo, Void> worker = new SwingWorker<>() {
             @Override
             protected GoogleBooksService.BookInfo doInBackground() throws Exception {
                 return googleBooksService.searchByISBN(isbn);
@@ -720,32 +631,41 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
                 try {
                     GoogleBooksService.BookInfo bookInfo = get();
                     if (bookInfo != null && bookInfo.isValid()) {
+                        
                         if (bookInfo.title != null && !bookInfo.title.isEmpty()) {
                             titleField.setText(bookInfo.title);
                         }
+                        
                         if (bookInfo.author != null && !bookInfo.author.isEmpty()) {
                             authorField.setText(bookInfo.author);
                         }
+                        
                         if (bookInfo.genre != null && !bookInfo.genre.isEmpty()) {
                             genreField.setText(bookInfo.genre);
                         }
+                        
                         if (bookInfo.year > 0) {
                             yearField.setText(String.valueOf(bookInfo.year));
                         }
+                        
                         if (bookInfo.publisher != null && !bookInfo.publisher.isEmpty()) {
                             publisherField.setText(bookInfo.publisher);
                         }
+                        
                         if (bookInfo.pageCount > 0) {
                             pagesField.setText(String.valueOf(bookInfo.pageCount));
                         }
+                        
                         if (bookInfo.description != null && !bookInfo.description.isEmpty()) {
                             descriptionArea.setText(bookInfo.description);
                         }
+                        
                         if (bookInfo.isbn != null && !bookInfo.isbn.isEmpty()) {
                             isbnField.setText(bookInfo.isbn);
                         }
                         
-                        Color highlightColor = new Color(220, 255, 220);
+                        // Tô highlight các trường vừa được tự động điền bằng màu xanh nhẹ
+                        Color highlightColor = new Color(220, 255, 220); 
                         Color originalColor = Color.WHITE;
                         
                         if (!titleField.getText().isEmpty()) titleField.setBackground(highlightColor);
@@ -756,6 +676,7 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
                         if (!pagesField.getText().isEmpty()) pagesField.setBackground(highlightColor);
                         if (!descriptionArea.getText().isEmpty()) descriptionArea.setBackground(highlightColor);
                         
+                        // Sau 2 giây, trả về màu mặc định
                         Timer timer = new Timer(2000, evt -> {
                             titleField.setBackground(originalColor);
                             authorField.setBackground(originalColor);
@@ -769,19 +690,15 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
                         timer.start();
                     } else {
                         JOptionPane.showMessageDialog(parentDialog, 
-                            "Không tìm thấy thông tin sách với ISBN: " + isbn + "\n" +
-                            "Vui lòng kiểm tra lại ISBN hoặc nhập thông tin thủ công.", 
-                            "Không tìm thấy", 
-                            JOptionPane.WARNING_MESSAGE);
+                            "Cannot find information with ISBN: " + isbn + "\n" +
+                            "Please check again or type manually", 
+                            "Error", JOptionPane.WARNING_MESSAGE);
                     }
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(parentDialog, 
-                        "Lỗi khi gọi Google Books API: " + e.getMessage() + "\n" +
-                        "Vui lòng kiểm tra kết nối mạng và thử lại.", 
-                        "Lỗi", 
-                        JOptionPane.ERROR_MESSAGE);
-                    System.err.println("Error in auto fill: " + e.getMessage());
-                    e.printStackTrace();
+                        "Error when calling Google Books API: " + e.getMessage() + "\n" +
+                        "Please check the Internet and try again", 
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
@@ -789,3 +706,4 @@ public class DocumentPanel extends JPanel implements RefreshablePanel {
         worker.execute();
         loadingDialog.setVisible(true);
     }
+}
