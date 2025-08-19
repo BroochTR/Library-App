@@ -1,5 +1,3 @@
-package com.library.model;
-
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
@@ -250,3 +248,4 @@ public class LoanTransaction {
                            id, userId, documentId, status);
     }
 }
+
