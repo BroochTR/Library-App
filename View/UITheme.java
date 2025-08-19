@@ -5,13 +5,13 @@ import javax.swing.border.Border;
 import java.awt.*;
 
 /**
- * Hằng số UI Theme cho giao diện hiện đại và thân thiện với người dùng
+ * Xử lý màu sắc cho toàn view
  */
 public class UITheme {
     
-    // Bảng màu - Theme xanh hiện đại
+    // Bảng màu - Chủ đề xanh hiện đại
     public static final Color PRIMARY_COLOR = new Color(59, 130, 246);        
-    public static final Color PRIMARY_DARK = new Color(37, 99, 235);          
+    public static final Color PRIMARY_DARK = new Color(37, 99, 235);        
     public static final Color PRIMARY_LIGHT = new Color(147, 197, 253);       
     
     public static final Color ACCENT_COLOR = new Color(16, 185, 129);         
@@ -19,17 +19,17 @@ public class UITheme {
     public static final Color DANGER_COLOR = new Color(239, 68, 68);          
     
     // Màu nền
-    public static final Color BACKGROUND_PRIMARY = new Color(249, 250, 251);  
+    public static final Color BACKGROUND_PRIMARY = new Color(249, 250, 251);   
     public static final Color BACKGROUND_SECONDARY = new Color(243, 244, 246); 
     public static final Color BACKGROUND_CARD = Color.WHITE;
     
     // Màu chữ
-    public static final Color TEXT_PRIMARY = new Color(17, 24, 39);           
-    public static final Color TEXT_SECONDARY = new Color(75, 85, 99);         
-    public static final Color TEXT_MUTED = new Color(156, 163, 175);          
+    public static final Color TEXT_PRIMARY = new Color(17, 24, 39);         
+    public static final Color TEXT_SECONDARY = new Color(75, 85, 99);        
+    public static final Color TEXT_MUTED = new Color(156, 163, 175);
     
     // Màu viền
-    public static final Color BORDER_COLOR = new Color(229, 231, 235);        
+    public static final Color BORDER_COLOR = new Color(229, 231, 235);       
     public static final Color BORDER_FOCUS = PRIMARY_COLOR;
     
     // Font chữ
@@ -46,7 +46,7 @@ public class UITheme {
     public static final int INPUT_HEIGHT = 36;
     
     /**
-     * Tạo button hiện đại với style chính
+     * Tạo nút
      */
     public static JButton createPrimaryButton(String text) {
         JButton button = new JButton(text);
@@ -55,7 +55,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo button hiện đại với style phụ
+     * Tạo nút phụ
      */
     public static JButton createSecondaryButton(String text) {
         JButton button = new JButton(text);
@@ -65,7 +65,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo button thành công
+     * Check tạo nút thành công
      */
     public static JButton createSuccessButton(String text) {
         JButton button = new JButton(text);
@@ -74,7 +74,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo button cảnh báo
+     * Check tạo nút thất bại
      */
     public static JButton createWarningButton(String text) {
         JButton button = new JButton(text);
@@ -83,7 +83,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo button nguy hiểm
+     * Check tạo nút nguye hiểm
      */
     public static JButton createDangerButton(String text) {
         JButton button = new JButton(text);
@@ -92,7 +92,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo style cho button với giao diện hiện đại
+     * Áp dụng style cho nút với giao diện
      */
     private static void styleButton(JButton button, Color bgColor, Color textColor, Color hoverColor) {
         button.setBackground(bgColor);
@@ -104,7 +104,6 @@ public class UITheme {
         button.setPreferredSize(new Dimension(120, BUTTON_HEIGHT));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Thêm hiệu ứng hover
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -119,7 +118,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo text field hiện đại
+     * Tạo UI ô nhập 
      */
     public static JTextField createTextField(String placeholder) {
         JTextField field = new JTextField();
@@ -127,7 +126,6 @@ public class UITheme {
         field.setBorder(createInputBorder());
         field.setPreferredSize(new Dimension(field.getPreferredSize().width, INPUT_HEIGHT));
         
-        // Thêm hiệu ứng placeholder
         if (placeholder != null && !placeholder.isEmpty()) {
             field.setText(placeholder);
             field.setForeground(TEXT_MUTED);
@@ -157,7 +155,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo panel hiện đại với giao diện card
+     * Tạo panel dạng thẻ 
      */
     public static JPanel createCard() {
         JPanel panel = new JPanel();
@@ -167,7 +165,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo panel hiện đại với padding
+     * Tạo panel với padding
      */
     public static JPanel createPanel(LayoutManager layout) {
         JPanel panel = new JPanel(layout);
@@ -176,7 +174,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo viền card với hiệu ứng đổ bóng
+     * Tạo viền thẻ 
      */
     public static Border createCardBorder() {
         return BorderFactory.createCompoundBorder(
@@ -193,7 +191,7 @@ public class UITheme {
     }
     
     /**
-     * Tạo viền input
+     * Tạo viền cho ô nhập
      */
     public static Border createInputBorder() {
         return createInputBorder(BORDER_COLOR);
@@ -219,4 +217,4 @@ public class UITheme {
             TEXT_PRIMARY
         );
     }
-} 
+}
