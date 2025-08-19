@@ -7,44 +7,55 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Panel for displaying library statistics and reports
+ * Bảng hiển thị thống kê và báo cáo của thư viện.
  */
 public class StatisticsPanel extends JPanel implements RefreshablePanel {
     private Library library;
     private JTextArea statsTextArea;
     private JTextArea reportsTextArea;
     
+    /**
+     * Khởi tạo panel thống kê và báo cáo.
+     * @param library đối tượng thư viện để tổng hợp dữ liệu
+     */
     public StatisticsPanel(Library library) {
         this.library = library;
         initializePanel();
         refreshData();
     }
     
+    /**
+     * Khởi tạo bố cục cho panel thống kê.
+     */
     private void initializePanel() {
         setLayout(new BorderLayout());
         setBackground(UITheme.BACKGROUND_PRIMARY);
         setBorder(UITheme.createTitledBorder("Library Statistics & Reports"));
         
-        // Create main panel with split pane
+        // Tạo khu vực chính với bộ chia dọc
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setDividerLocation(400);
         splitPane.setBackground(UITheme.BACKGROUND_PRIMARY);
         
-        // Left panel - Quick Statistics
+        // Panel trái - Thống kê nhanh
         JPanel leftPanel = createStatisticsPanel();
         splitPane.setLeftComponent(leftPanel);
         
-        // Right panel - Detailed Reports
+        // Panel phải - Báo cáo chi tiết
         JPanel rightPanel = createReportsPanel();
         splitPane.setRightComponent(rightPanel);
         
         add(splitPane, BorderLayout.CENTER);
         
-        // Bottom panel with buttons
+        // Panel dưới cùng với các nút thao tác
         JPanel bottomPanel = createBottomPanel();
         add(bottomPanel, BorderLayout.SOUTH);
     }
     
+    /**
+     * Tạo panel thống kê nhanh (bên trái).
+     * @return panel thống kê
+     */
     private JPanel createStatisticsPanel() {
         JPanel panel = UITheme.createCard();
         panel.setLayout(new BorderLayout());
@@ -52,7 +63,9 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         
         statsTextArea = new JTextArea();
         statsTextArea.setEditable(false);
-        statsTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        statsTextArea.setFont(new Font("Arial", Font.PLAIN, 13));
+        statsTextArea.setLineWrap(true);
+        statsTextArea.setWrapStyleWord(true);
         statsTextArea.setBackground(new Color(248, 248, 248));
         
         JScrollPane scrollPane = new JScrollPane(statsTextArea);
@@ -62,6 +75,10 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo panel báo cáo chi tiết (bên phải).
+     * @return panel báo cáo
+     */
     private JPanel createReportsPanel() {
         JPanel panel = UITheme.createCard();
         panel.setLayout(new BorderLayout());
@@ -69,7 +86,9 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         
         reportsTextArea = new JTextArea();
         reportsTextArea.setEditable(false);
-        reportsTextArea.setFont(new Font("Monospaced", Font.PLAIN, 11));
+        reportsTextArea.setFont(new Font("Arial", Font.PLAIN, 12));
+        reportsTextArea.setLineWrap(true);
+        reportsTextArea.setWrapStyleWord(true);
         reportsTextArea.setBackground(new Color(248, 248, 248));
         
         JScrollPane scrollPane = new JScrollPane(reportsTextArea);
@@ -79,6 +98,10 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo khu vực nút thao tác phía dưới.
+     * @return panel dưới cùng
+     */
     private JPanel createBottomPanel() {
         JPanel panel = UITheme.createPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM));
@@ -100,6 +123,9 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         updateReports();
     }
     
+    /**
+     * Cập nhật phần thống kê nhanh từ dữ liệu hiện tại của thư viện.
+     */
     private void updateStatistics() {
         StringBuilder stats = new StringBuilder();
         Map<String, Object> libraryStats = library.getLibraryStatistics();
@@ -109,37 +135,37 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         stats.append("Address: ").append(library.getAddress()).append("\n\n");
         
         stats.append("=== COLLECTION STATISTICS ===\n");
-        stats.append("📚 Total Documents: ").append(libraryStats.get("totalDocuments")).append("\n");
-        stats.append("✅ Available: ").append(libraryStats.get("availableDocuments")).append("\n");
-        stats.append("📖 Borrowed: ").append(libraryStats.get("borrowedDocuments")).append("\n");
+        stats.append("Total Documents: ").append(libraryStats.get("totalDocuments")).append("\n");
+        stats.append("Available: ").append(libraryStats.get("availableDocuments")).append("\n");
+        stats.append("Borrowed: ").append(libraryStats.get("borrowedDocuments")).append("\n");
         
-        // Document type breakdown
+        // Phân loại theo loại tài liệu
         List<Document> documents = library.getAllDocuments();
-        stats.append("\n📖 Documents: ").append(documents.size()).append("\n\n");
+        stats.append("\nDocuments: ").append(documents.size()).append("\n\n");
         
         stats.append("=== USER STATISTICS ===\n");
-        stats.append("👥 Total Users: ").append(libraryStats.get("totalUsers")).append("\n");
+        stats.append("Total Users: ").append(libraryStats.get("totalUsers")).append("\n");
         
-        // User type breakdown
+        // Phân loại theo nhóm người dùng
         List<User> users = library.getAllUsers();
         long students = users.stream().filter(u -> u.getUserType() == User.UserType.STUDENT).count();
         long faculty = users.stream().filter(u -> u.getUserType() == User.UserType.FACULTY).count();
         long staff = users.stream().filter(u -> u.getUserType() == User.UserType.STAFF).count();
         long guests = users.stream().filter(u -> u.getUserType() == User.UserType.GUEST).count();
         
-        stats.append("\n🎓 Students: ").append(students).append("\n");
-        stats.append("👨‍🏫 Faculty: ").append(faculty).append("\n");
-        stats.append("👨‍💼 Staff: ").append(staff).append("\n");
-        stats.append("👤 Guests: ").append(guests).append("\n\n");
+        stats.append("\nStudents: ").append(students).append("\n");
+        stats.append("Faculty: ").append(faculty).append("\n");
+        stats.append("Staff: ").append(staff).append("\n");
+        stats.append("Guests: ").append(guests).append("\n\n");
         
         stats.append("=== TRANSACTION STATISTICS ===\n");
-        stats.append("📋 Total Transactions: ").append(libraryStats.get("totalTransactions")).append("\n");
-        stats.append("⚠️ Overdue: ").append(libraryStats.get("overdueTransactions")).append("\n\n");
+        stats.append("Total Transactions: ").append(libraryStats.get("totalTransactions")).append("\n");
+        stats.append("Overdue: ").append(libraryStats.get("overdueTransactions")).append("\n\n");
         
         stats.append("=== REVIEW STATISTICS ===\n");
-        stats.append("⭐ Total Reviews: ").append(libraryStats.get("totalReviews")).append("\n");
+        stats.append("Total Reviews: ").append(libraryStats.get("totalReviews")).append("\n");
         
-        // Calculate average rating across all documents
+        // Tính điểm trung bình trên tất cả tài liệu có đánh giá
         List<Document> allDocs = library.getAllDocuments();
         double totalRating = 0;
         int docsWithReviews = 0;
@@ -160,10 +186,13 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         statsTextArea.setText(stats.toString());
     }
     
+    /**
+     * Cập nhật phần báo cáo chi tiết (top rated, overdue, hoạt động...).
+     */
     private void updateReports() {
         StringBuilder reports = new StringBuilder();
         
-        // Popular Documents Report
+        // Báo cáo tài liệu được đánh giá cao
         reports.append("=== TOP RATED DOCUMENTS ===\n");
         List<Document> popularDocs = library.getPopularDocuments();
         if (popularDocs.isEmpty()) {
@@ -177,13 +206,13 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
                 reports.append(String.format("   Author: %s\n", doc.getAuthor()));
                 reports.append(String.format("   Rating: %.1f/5 (%d reviews)\n", rating, reviewCount));
                 
-                // Use quantity status format
-                String statusDisplay = doc.getQuantityStatus(); // Show available/total format
+                // Sử dụng định dạng trạng thái số lượng (còn / tổng)
+                String statusDisplay = doc.getQuantityStatus();
                 reports.append(String.format("   Status: %s\n\n", statusDisplay));
             }
         }
         
-        // Overdue Reports
+        // Báo cáo quá hạn
         reports.append("=== OVERDUE DOCUMENTS ===\n");
         List<LoanTransaction> overdueTransactions = library.getOverdueTransactions();
         if (overdueTransactions.isEmpty()) {
@@ -201,7 +230,7 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
             }
         }
         
-        // Active Users Report
+        // Báo cáo người mượn tích cực nhất
         reports.append("=== MOST ACTIVE BORROWERS ===\n");
         List<User> users = library.getAllUsers();
         users.sort((u1, u2) -> Integer.compare(u2.getBorrowedCount(), u1.getBorrowedCount()));
@@ -216,7 +245,7 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
             }
         }
         
-        // Genre Distribution
+        // Phân bố theo thể loại
         reports.append("=== COLLECTION BY GENRE ===\n");
         Map<String, Long> genreCounts = library.getAllDocuments().stream()
             .collect(java.util.stream.Collectors.groupingBy(
@@ -230,7 +259,7 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
                 reports.append(String.format("• %s: %d documents\n", entry.getKey(), entry.getValue()))
             );
         
-        // Recent Activity
+        // Hoạt động gần đây
         reports.append("\n=== RECENT ACTIVITY ===\n");
         List<LoanTransaction> recentTransactions = library.getAllTransactions().stream()
             .sorted((t1, t2) -> t2.getBorrowDate().compareTo(t1.getBorrowDate()))
@@ -254,6 +283,9 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         reportsTextArea.setText(reports.toString());
     }
     
+    /**
+     * Xuất báo cáo đầy đủ ra hộp thoại để sao chép hoặc xem.
+     */
     private void exportReport() {
         StringBuilder fullReport = new StringBuilder();
         fullReport.append("LIBRARY MANAGEMENT SYSTEM - FULL REPORT\n");
@@ -266,13 +298,15 @@ public class StatisticsPanel extends JPanel implements RefreshablePanel {
         fullReport.append("DETAILED REPORTS:\n");
         fullReport.append(reportsTextArea.getText());
         
-        // Create a dialog to show the report
+        // Tạo hộp thoại để hiển thị báo cáo
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Export Report", true);
         dialog.setLayout(new BorderLayout());
         
         JTextArea reportArea = new JTextArea(fullReport.toString());
         reportArea.setEditable(false);
-        reportArea.setFont(new Font("Monospaced", Font.PLAIN, 10));
+        reportArea.setFont(new Font("Arial", Font.PLAIN, 11));
+        reportArea.setLineWrap(true);
+        reportArea.setWrapStyleWord(true);
         
         JScrollPane scrollPane = new JScrollPane(reportArea);
         scrollPane.setPreferredSize(new Dimension(600, 500));

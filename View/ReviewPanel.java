@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Panel for managing document reviews and ratings
+ * Bảng quản lý đánh giá và xếp hạng tài liệu.
  */
 public class ReviewPanel extends JPanel implements RefreshablePanel {
     private Library library;
@@ -15,30 +15,41 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
     private DefaultTableModel tableModel;
     private JTextField searchField;
     
+    /**
+     * Khởi tạo panel quản lý đánh giá.
+     * @param library đối tượng thư viện để truy xuất dữ liệu
+     */
     public ReviewPanel(Library library) {
         this.library = library;
         initializePanel();
         refreshData();
     }
     
+    /**
+     * Khởi tạo bố cục tổng thể cho panel.
+     */
     private void initializePanel() {
         setLayout(new BorderLayout());
         setBackground(UITheme.BACKGROUND_PRIMARY);
         setBorder(UITheme.createTitledBorder("Review Management"));
         
-        // Create top panel for search
+        // Tạo panel trên cùng cho tìm kiếm
         JPanel topPanel = createTopPanel();
         add(topPanel, BorderLayout.NORTH);
         
-        // Create center panel with table
+        // Tạo panel trung tâm với bảng
         JPanel centerPanel = createCenterPanel();
         add(centerPanel, BorderLayout.CENTER);
         
-        // Create bottom panel with buttons
+        // Tạo panel dưới cùng với các nút chức năng
         JPanel bottomPanel = createBottomPanel();
         add(bottomPanel, BorderLayout.SOUTH);
     }
     
+    /**
+     * Tạo khu vực tìm kiếm ở phía trên.
+     * @return panel tìm kiếm
+     */
     private JPanel createTopPanel() {
         JPanel panel = UITheme.createCard();
         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -68,15 +79,19 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo khu vực trung tâm với bảng danh sách đánh giá.
+     * @return panel trung tâm
+     */
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Create table
+        // Tạo bảng
         String[] columnNames = {"Review ID", "Document", "User", "Rating", "Comment", "Date", "Helpful"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false; // Bảng chỉ đọc
             }
         };
         
@@ -85,14 +100,14 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         reviewTable.setRowHeight(25);
         reviewTable.getTableHeader().setReorderingAllowed(false);
         
-        // Set column widths
-        reviewTable.getColumnModel().getColumn(0).setPreferredWidth(100); // Review ID
-        reviewTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Document
-        reviewTable.getColumnModel().getColumn(2).setPreferredWidth(120); // User
-        reviewTable.getColumnModel().getColumn(3).setPreferredWidth(60);  // Rating
-        reviewTable.getColumnModel().getColumn(4).setPreferredWidth(300); // Comment
-        reviewTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Date
-        reviewTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Helpful
+        // Thiết lập độ rộng cột
+        reviewTable.getColumnModel().getColumn(0).setPreferredWidth(100); // Mã đánh giá
+        reviewTable.getColumnModel().getColumn(1).setPreferredWidth(200); // Tài liệu
+        reviewTable.getColumnModel().getColumn(2).setPreferredWidth(120); // Người dùng
+        reviewTable.getColumnModel().getColumn(3).setPreferredWidth(60);  // Điểm
+        reviewTable.getColumnModel().getColumn(4).setPreferredWidth(300); // Bình luận
+        reviewTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Ngày
+        reviewTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Hữu ích
         
         JScrollPane scrollPane = new JScrollPane(reviewTable);
         scrollPane.setPreferredSize(new Dimension(800, 400));
@@ -101,6 +116,10 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo khu vực nút chức năng phía dưới.
+     * @return panel dưới cùng
+     */
     private JPanel createBottomPanel() {
         JPanel panel = UITheme.createPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM));
@@ -126,9 +145,9 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
     
     @Override
     public void refreshData() {
-        tableModel.setRowCount(0); // Clear existing data
+        tableModel.setRowCount(0); // Xóa dữ liệu hiện có
         
-        // Get all reviews from all documents
+        // Lấy toàn bộ đánh giá từ tất cả tài liệu
         List<Document> documents = library.getAllDocuments();
         for (Document document : documents) {
             List<Review> reviews = library.getDocumentReviews(document.getId());
@@ -155,6 +174,9 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         }
     }
     
+    /**
+     * Thực hiện tìm kiếm đánh giá theo tiêu đề tài liệu hoặc người đánh giá.
+     */
     private void performSearch() {
         String searchText = searchField.getText().trim().toLowerCase();
         if (searchText.isEmpty()) {
@@ -191,13 +213,16 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         }
     }
     
+    /**
+     * Hiển thị hộp thoại thêm đánh giá mới.
+     */
     private void showAddReviewDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add Review", true);
         dialog.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         
-        // User selection
+        // Chọn người dùng
         List<User> users = library.getAllUsers().stream()
             .filter(User::isActive)
             .toList();
@@ -218,7 +243,7 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
             }
         });
         
-        // Document selection
+        // Chọn tài liệu
         List<Document> documents = library.getAllDocuments();
         JComboBox<Document> documentCombo = new JComboBox<>();
         for (Document document : documents) {
@@ -237,7 +262,7 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
             }
         });
         
-        // Rating selection
+        // Chọn điểm đánh giá
         JComboBox<Integer> ratingCombo = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
         ratingCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -254,13 +279,13 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         });
         ratingCombo.setSelectedItem(5);
         
-        // Comment text area
+        // Ô nhập bình luận
         JTextArea commentArea = new JTextArea(5, 30);
         commentArea.setWrapStyleWord(true);
         commentArea.setLineWrap(true);
         JScrollPane commentScroll = new JScrollPane(commentArea);
         
-        // Add components to dialog
+        // Thêm các thành phần vào hộp thoại
         gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
         dialog.add(new JLabel("User:"), gbc);
         gbc.gridx = 1;
@@ -281,7 +306,7 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         gbc.gridx = 1; gbc.fill = GridBagConstraints.BOTH;
         dialog.add(commentScroll, gbc);
         
-        // Buttons
+        // Các nút thao tác
         JPanel buttonPanel = new JPanel();
         JButton saveButton = new JButton("Save Review");
         JButton cancelButton = new JButton("Cancel");
@@ -319,6 +344,9 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         dialog.setVisible(true);
     }
     
+    /**
+     * Hiển thị chi tiết của đánh giá đang chọn.
+     */
     private void showReviewDetails() {
         int selectedRow = reviewTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -328,7 +356,7 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         
         String reviewId = (String) tableModel.getValueAt(selectedRow, 0);
         
-        // Find the review
+        // Tìm đánh giá tương ứng
         Review review = null;
         Document document = null;
         List<Document> documents = library.getAllDocuments();
@@ -382,7 +410,9 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         
         JTextArea textArea = new JTextArea(details.toString());
         textArea.setEditable(false);
-        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        textArea.setFont(new Font("Arial", Font.PLAIN, 13));
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
         
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(500, 400));
@@ -390,6 +420,9 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         JOptionPane.showMessageDialog(this, scrollPane, "Review Details", JOptionPane.INFORMATION_MESSAGE);
     }
     
+    /**
+     * Đánh dấu đánh giá là hữu ích.
+     */
     private void markHelpful() {
         int selectedRow = reviewTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -399,7 +432,7 @@ public class ReviewPanel extends JPanel implements RefreshablePanel {
         
         String reviewId = (String) tableModel.getValueAt(selectedRow, 0);
         
-        // Use Library method to mark helpful and save to database
+        // Gọi phương thức của Library để đánh dấu hữu ích và lưu vào cơ sở dữ liệu
         if (library.markReviewAsHelpful(reviewId)) {
             refreshData();
             JOptionPane.showMessageDialog(this, "Review marked as helpful!");

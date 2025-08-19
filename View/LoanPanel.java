@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * Panel for managing loan operations
+ * Bảng quản lý các nghiệp vụ mượn/trả tài liệu.
  */
 public class LoanPanel extends JPanel implements RefreshablePanel {
     private Library library;
@@ -15,30 +15,41 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
     private DefaultTableModel tableModel;
     private JComboBox<String> filterCombo;
     
+    /**
+     * Khởi tạo panel quản lý mượn/trả.
+     * @param library đối tượng thư viện để truy xuất dữ liệu và thao tác nghiệp vụ
+     */
     public LoanPanel(Library library) {
         this.library = library;
         initializePanel();
         refreshData();
     }
     
+    /**
+     * Khởi tạo bố cục tổng thể cho panel.
+     */
     private void initializePanel() {
         setLayout(new BorderLayout());
         setBackground(UITheme.BACKGROUND_PRIMARY);
         setBorder(UITheme.createTitledBorder("Loan Management"));
         
-        // Create top panel for filters
+        // Tạo panel phía trên cho bộ lọc
         JPanel topPanel = createTopPanel();
         add(topPanel, BorderLayout.NORTH);
         
-        // Create center panel with table
+        // Tạo panel trung tâm chứa bảng
         JPanel centerPanel = createCenterPanel();
         add(centerPanel, BorderLayout.CENTER);
         
-        // Create bottom panel with buttons
+        // Tạo panel dưới cùng với các nút chức năng
         JPanel bottomPanel = createBottomPanel();
         add(bottomPanel, BorderLayout.SOUTH);
     }
     
+    /**
+     * Tạo khu vực bộ lọc ở phía trên.
+     * @return panel bộ lọc
+     */
     private JPanel createTopPanel() {
         JPanel panel = UITheme.createCard();
         panel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -48,7 +59,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         filterLabel.setForeground(UITheme.TEXT_PRIMARY);
         panel.add(filterLabel);
         
-        filterCombo = new JComboBox<>(new String[]{"All Loans", "Returned Loans", "Overdue Loans"});
+        filterCombo = new JComboBox<>(new String[]{"Active Loans", "All Loans", "Returned Loans", "Overdue Loans"});
         filterCombo.setFont(UITheme.FONT_BODY);
         filterCombo.setPreferredSize(new Dimension(150, UITheme.INPUT_HEIGHT));
         filterCombo.addActionListener(e -> refreshData());
@@ -63,15 +74,19 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo khu vực trung tâm chứa bảng giao dịch mượn/trả.
+     * @return panel trung tâm
+     */
     private JPanel createCenterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Create table
+        // Tạo bảng
         String[] columnNames = {"Transaction ID", "User", "Document", "Borrow Date", "Due Date", "Return Date", "Fine"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make table read-only
+                return false; // Bảng chỉ đọc
             }
         };
         
@@ -80,14 +95,14 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         loanTable.setRowHeight(25);
         loanTable.getTableHeader().setReorderingAllowed(false);
         
-        // Set column widths
-        loanTable.getColumnModel().getColumn(0).setPreferredWidth(120); // Transaction ID
-        loanTable.getColumnModel().getColumn(1).setPreferredWidth(150); // User
-        loanTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Document
-        loanTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Borrow Date
-        loanTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Due Date
-        loanTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Return Date
-        loanTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Fine
+        // Thiết lập độ rộng cột
+        loanTable.getColumnModel().getColumn(0).setPreferredWidth(120); // Mã giao dịch
+        loanTable.getColumnModel().getColumn(1).setPreferredWidth(150); // Người dùng
+        loanTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Tài liệu
+        loanTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Ngày mượn
+        loanTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Hạn trả
+        loanTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Ngày trả
+        loanTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Tiền phạt
         
         JScrollPane scrollPane = new JScrollPane(loanTable);
         scrollPane.setPreferredSize(new Dimension(800, 400));
@@ -96,15 +111,19 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         return panel;
     }
     
+    /**
+     * Tạo khu vực nút chức năng phía dưới.
+     * @return panel dưới cùng
+     */
     private JPanel createBottomPanel() {
         JPanel panel = UITheme.createPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM));
         
-        JButton borrowButton = UITheme.createPrimaryButton("+ Borrow Document");
+        JButton borrowButton = UITheme.createPrimaryButton("Borrow");
         borrowButton.addActionListener(e -> showBorrowDialog());
         panel.add(borrowButton);
         
-        JButton returnButton = UITheme.createSuccessButton("Return Document");
+        JButton returnButton = UITheme.createSuccessButton("Return");
         returnButton.addActionListener(e -> returnDocument());
         panel.add(returnButton);
         
@@ -125,12 +144,18 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
     
     @Override
     public void refreshData() {
-        tableModel.setRowCount(0); // Clear existing data
+        tableModel.setRowCount(0); // Xóa dữ liệu hiện có
         
         List<LoanTransaction> transactions;
         String selectedFilter = (String) filterCombo.getSelectedItem();
         
         switch (selectedFilter) {
+            case "Active Loans":
+                transactions = library.getAllTransactions().stream()
+                    .filter(t -> t.getStatus() == LoanTransaction.TransactionStatus.ACTIVE || 
+                               t.getStatus() == LoanTransaction.TransactionStatus.RENEWED)
+                    .toList();
+                break;
             case "Returned Loans":
                 transactions = library.getAllTransactions().stream()
                     .filter(t -> t.getStatus() == LoanTransaction.TransactionStatus.RETURNED ||
@@ -140,7 +165,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
             case "Overdue Loans":
                 transactions = library.getOverdueTransactions();
                 break;
-            default:
+            default: // "All Loans" — Tất cả giao dịch
                 transactions = library.getAllTransactions();
                 break;
         }
@@ -169,13 +194,16 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         }
     }
     
+    /**
+     * Hiển thị hộp thoại thêm giao dịch mượn tài liệu.
+     */
     private void showBorrowDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Borrow Document", true);
         dialog.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         
-        // User selection
+        // Chọn người dùng
         List<User> users = library.getAllUsers().stream()
             .filter(User::isActive)
             .toList();
@@ -196,7 +224,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
             }
         });
         
-        // Document selection
+        // Chọn tài liệu
         List<Document> availableDocuments = library.getAvailableDocuments();
         JComboBox<Document> documentCombo = new JComboBox<>();
         for (Document document : availableDocuments) {
@@ -215,7 +243,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
             }
         });
         
-        // Add components to dialog
+        // Thêm các thành phần vào hộp thoại
         gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
         dialog.add(new JLabel("Select User:"), gbc);
         gbc.gridx = 1;
@@ -226,7 +254,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         gbc.gridx = 1;
         dialog.add(documentCombo, gbc);
         
-        // Buttons
+        // Các nút thao tác
         JPanel buttonPanel = new JPanel();
         JButton borrowButton = new JButton("Borrow");
         JButton cancelButton = new JButton("Cancel");
@@ -272,6 +300,9 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         dialog.setVisible(true);
     }
     
+    /**
+     * Xử lý trả tài liệu cho giao dịch đang chọn.
+     */
     private void returnDocument() {
         int selectedRow = loanTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -306,7 +337,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         
         if (transaction.isOverdue()) {
             double fine = transaction.calculateFine(library.getDailyFineRate());
-            message += String.format("\n\n⚠️ OVERDUE by %d days\nFine: $%.2f", 
+            message += String.format("\n\nOVERDUE by %d days\nFine: $%.2f", 
                                    transaction.getDaysOverdue(), fine);
         }
         
@@ -327,6 +358,9 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         }
     }
     
+    /**
+     * Gia hạn giao dịch mượn đang chọn nếu đủ điều kiện.
+     */
     private void renewLoan() {
         int selectedRow = loanTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -380,6 +414,9 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         }
     }
     
+    /**
+     * Hiển thị chi tiết giao dịch mượn/trả đang chọn.
+     */
     private void showLoanDetails() {
         int selectedRow = loanTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -431,7 +468,7 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         details.append("Renewals: ").append(transaction.getRenewalCount()).append("/").append(transaction.getMaxRenewals()).append("\n");
         
         if (transaction.isOverdue()) {
-            details.append("⚠️ OVERDUE by ").append(transaction.getDaysOverdue()).append(" days\n");
+            details.append("OVERDUE by ").append(transaction.getDaysOverdue()).append(" days\n");
         } else if (transaction.getReturnDate() == null) {
             details.append("Days until due: ").append(transaction.getDaysUntilDue()).append("\n");
         }
@@ -444,7 +481,9 @@ public class LoanPanel extends JPanel implements RefreshablePanel {
         
         JTextArea textArea = new JTextArea(details.toString());
         textArea.setEditable(false);
-        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        textArea.setFont(new Font("Arial", Font.PLAIN, 13));
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
         
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setPreferredSize(new Dimension(500, 400));
