@@ -1,3 +1,5 @@
+package com.library.repository;
+
 import com.library.model.Document;
 import com.library.database.DatabaseConnection;
 import java.sql.*;
@@ -37,7 +39,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi lưu tài liệu: " + e.getMessage());
+            System.err.println("Error saving document: " + e.getMessage());
             return false;
         }
     }
@@ -61,7 +63,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 return mapResultSetToDocument(rs);
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tài liệu theo ID: " + e.getMessage());
+            System.err.println("Error when searching for documents by ID: " + e.getMessage());
         }
         return null;
     }
@@ -83,7 +85,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 documents.add(mapResultSetToDocument(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tất cả tài liệu: " + e.getMessage());
+            System.err.println("Error when searching for all documents: " + e.getMessage());
         }
         return documents;
     }
@@ -119,7 +121,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi cập nhật tài liệu: " + e.getMessage());
+            System.err.println("Error when updating document: " + e.getMessage());
             return false;
         }
     }
@@ -139,7 +141,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
             stmt.setString(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi xóa tài liệu: " + e.getMessage());
+            System.err.println("Error when deleting document: " + e.getMessage());
             return false;
         }
     }
@@ -164,7 +166,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 documents.add(mapResultSetToDocument(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tài liệu theo tiêu đề: " + e.getMessage());
+            System.err.println("Error when searching for documents by title: " + e.getMessage());
         }
         return documents;
     }
@@ -189,7 +191,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 documents.add(mapResultSetToDocument(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tài liệu theo tác giả: " + e.getMessage());
+            System.err.println("Error when searching for documents by author: " + e.getMessage());
         }
         return documents;
     }
@@ -214,7 +216,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 documents.add(mapResultSetToDocument(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tài liệu theo thể loại: " + e.getMessage());
+            System.err.println("Error when searching for documents by genre: " + e.getMessage());
         }
         return documents;
     }
@@ -236,7 +238,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
                 documents.add(mapResultSetToDocument(rs));
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm tài liệu có sẵn: " + e.getMessage());
+            System.err.println("Error when searching for available documents: " + e.getMessage());
         }
         return documents;
     }
@@ -259,7 +261,7 @@ public class MySQLDocumentRepository implements DocumentRepository {
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi cập nhật số lượng tài liệu: " + e.getMessage());
+            System.err.println("Error when updating document quantity: " + e.getMessage());
             return false;
         }
     }
