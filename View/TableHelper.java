@@ -6,7 +6,7 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 
 /**
- * Lớp tiện ích cho các thao tác table phổ biến
+ * Lớp cho các thao tác table phổ biến
  */
 public class TableHelper {
     
@@ -17,7 +17,7 @@ public class TableHelper {
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Làm cho table chỉ đọc
+                return false; 
             }
         };
         
@@ -30,7 +30,7 @@ public class TableHelper {
     }
     
     /**
-     * Thiết lập độ rộng cột chuẩn cho các loại table thông dụng
+     * Thiết lập độ rộng cột chuẩn 
      */
     public static void setStandardColumnWidths(JTable table, int[] widths) {
         for (int i = 0; i < Math.min(widths.length, table.getColumnCount()); i++) {
@@ -42,7 +42,7 @@ public class TableHelper {
      * Xóa và điền lại table với dữ liệu mới
      */
     public static void updateTableData(DefaultTableModel model, Object[][] data) {
-        model.setRowCount(0); // Xóa dữ liệu hiện tại
+        model.setRowCount(0); 
         for (Object[] row : data) {
             model.addRow(row);
         }
@@ -65,7 +65,7 @@ public class TableHelper {
     }
     
     /**
-     * Lấy ID được chọn (cột đầu tiên) từ table
+     * Lấy ID được chọn từ table
      */
     public static String getSelectedId(JTable table) {
         int selectedRow = table.getSelectedRow();
@@ -76,7 +76,7 @@ public class TableHelper {
     }
     
     /**
-     * Tạo panel table có thể cuộn
+     * Tạo panel table cuộn
      */
     public static JPanel createTablePanel(JTable table, Dimension preferredSize) {
         JPanel panel = new JPanel(new BorderLayout());
@@ -87,7 +87,7 @@ public class TableHelper {
     }
     
     /**
-     * Lọc các hàng table dựa trên text tìm kiếm
+     * Lọc các hàng table dựa trên text 
      */
     public static void filterTable(JTable table, String searchText, int... searchColumns) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -95,9 +95,8 @@ public class TableHelper {
         
         if (searchText != null && !searchText.trim().isEmpty()) {
             try {
-                // Tạo filter không phân biệt hoa thường cho các cột được chỉ định
                 StringBuilder regex = new StringBuilder();
-                regex.append("(?i)"); // Không phân biệt hoa thường
+                regex.append("(?i)"); 
                 regex.append(".*").append(searchText).append(".*");
                 
                 if (searchColumns.length > 0) {
@@ -106,7 +105,6 @@ public class TableHelper {
                     filter = RowFilter.regexFilter(regex.toString());
                 }
             } catch (java.util.regex.PatternSyntaxException e) {
-                // Nếu regex không hợp lệ, không lọc
                 filter = null;
             }
         }
@@ -124,4 +122,5 @@ public class TableHelper {
             table.setRowSorter(sorter);
         }
     }
+
 }
