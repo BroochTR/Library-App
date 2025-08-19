@@ -1,5 +1,3 @@
-package com.library.model;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +5,6 @@ import java.util.Objects;
 
 /**
  * Lớp User đại diện cho thành viên của thư viện.
- * Thể hiện nguyên lý lập trình hướng đối tượng: Đóng gói (Encapsulation).
  */
 public class User {
     private String id;
@@ -33,6 +30,7 @@ public class User {
 
         private final int defaultBorrowLimit;
 
+        //Constructor này được gọi khi khởi tạo từng giá trị enum.
         UserType(int defaultBorrowLimit) {
             this.defaultBorrowLimit = defaultBorrowLimit;
         }
@@ -95,6 +93,7 @@ public class User {
         this.address = "";
     }
 
+    //Getter và Setter
     public String getId() {
         return id;
     }
@@ -262,19 +261,11 @@ public class User {
         return Objects.equals(id, user.id);
     }
 
-    /**
-     * Tính toán mã băm dựa trên ID.
-     * @return mã băm
-     */
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
 
-    /**
-     * Trả về chuỗi đại diện cho thông tin người dùng.
-     * @return chuỗi mô tả
-     */
     @Override
     public String toString() {
         return String.format("User[id=%s, name=%s, type=%s, borrowed=%d/%d]",
