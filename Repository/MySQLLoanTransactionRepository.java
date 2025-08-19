@@ -12,6 +12,11 @@ import java.util.List;
  */
 public class MySQLLoanTransactionRepository implements LoanTransactionRepository {
     
+    /**
+     * Lưu một giao dịch mượn mới vào cơ sở dữ liệu
+     * @param transaction đối tượng giao dịch mượn cần lưu
+     * @return true nếu lưu thành công, false nếu thất bại
+     */
     @Override
     public boolean save(LoanTransaction transaction) {
         String sql = "INSERT INTO loan_transactions (id, user_id, document_id, borrow_date, due_date, " +
@@ -45,6 +50,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         }
     }
     
+    /**
+     * Tìm giao dịch mượn theo ID
+     * @param id mã giao dịch
+     * @return đối tượng LoanTransaction nếu tìm thấy, null nếu không
+     */
     @Override
     public LoanTransaction findById(String id) {
         String sql = "SELECT * FROM loan_transactions WHERE id = ?";
@@ -64,6 +74,10 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return null;
     }
     
+    /**
+     * Lấy tất cả các giao dịch mượn
+     * @return danh sách tất cả giao dịch mượn, sắp xếp theo ngày mượn giảm dần
+     */
     @Override
     public List<LoanTransaction> findAll() {
         String sql = "SELECT * FROM loan_transactions ORDER BY borrow_date DESC";
@@ -82,6 +96,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Cập nhật thông tin giao dịch mượn
+     * @param transaction đối tượng giao dịch mượn cần cập nhật
+     * @return true nếu cập nhật thành công, false nếu thất bại
+     */
     @Override
     public boolean update(LoanTransaction transaction) {
         String sql = "UPDATE loan_transactions SET user_id = ?, document_id = ?, borrow_date = ?, " +
@@ -116,6 +135,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         }
     }
     
+    /**
+     * Xóa giao dịch mượn theo ID
+     * @param id mã giao dịch cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
+     */
     @Override
     public boolean delete(String id) {
         String sql = "DELETE FROM loan_transactions WHERE id = ?";
@@ -131,6 +155,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         }
     }
     
+    /**
+     * Tìm tất cả giao dịch mượn của một người dùng
+     * @param userId mã người dùng
+     * @return danh sách giao dịch mượn của người dùng, sắp xếp theo ngày mượn giảm dần
+     */
     @Override
     public List<LoanTransaction> findByUserId(String userId) {
         String sql = "SELECT * FROM loan_transactions WHERE user_id = ? ORDER BY borrow_date DESC";
@@ -151,6 +180,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Tìm tất cả giao dịch mượn của một tài liệu
+     * @param documentId mã tài liệu
+     * @return danh sách giao dịch mượn của tài liệu, sắp xếp theo ngày mượn giảm dần
+     */
     @Override
     public List<LoanTransaction> findByDocumentId(String documentId) {
         String sql = "SELECT * FROM loan_transactions WHERE document_id = ? ORDER BY borrow_date DESC";
@@ -171,6 +205,10 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Tìm tất cả giao dịch mượn đang hoạt động
+     * @return danh sách giao dịch mượn đang hoạt động
+     */
     @Override
     public List<LoanTransaction> findActiveTransactions() {
         String sql = "SELECT * FROM loan_transactions " +
@@ -191,6 +229,10 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Tìm tất cả giao dịch mượn quá hạn
+     * @return danh sách giao dịch mượn quá hạn
+     */
     @Override
     public List<LoanTransaction> findOverdueTransactions() {
         String sql = "SELECT * FROM loan_transactions " +
@@ -211,6 +253,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Tìm tất cả giao dịch mượn đang hoạt động của một người dùng
+     * @param userId mã người dùng
+     * @return danh sách giao dịch mượn đang hoạt động của người dùng
+     */
     @Override
     public List<LoanTransaction> findActiveTransactionsByUserId(String userId) {
         String sql = "SELECT * FROM loan_transactions " +
@@ -233,6 +280,11 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
         return transactions;
     }
     
+    /**
+     * Kiểm tra xem tài liệu hiện có đang được mượn không
+     * @param documentId mã tài liệu
+     * @return true nếu tài liệu đang được mượn, false nếu không
+     */
     @Override
     public boolean isDocumentBorrowed(String documentId) {
         String sql = "SELECT COUNT(*) FROM loan_transactions " +
@@ -255,6 +307,9 @@ public class MySQLLoanTransactionRepository implements LoanTransactionRepository
     
     /**
      * Phương thức hỗ trợ để ánh xạ ResultSet thành đối tượng LoanTransaction
+     * @param rs ResultSet từ câu truy vấn SQL
+     * @return đối tượng LoanTransaction được tạo từ dữ liệu ResultSet
+     * @throws SQLException nếu có lỗi khi đọc dữ liệu từ ResultSet
      */
     private LoanTransaction mapResultSetToTransaction(ResultSet rs) throws SQLException {
         LoanTransaction transaction = new LoanTransaction();
