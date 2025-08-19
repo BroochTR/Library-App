@@ -26,12 +26,10 @@ public class GoogleBooksService {
             return null;
         }
         
-        // Làm sạch ISBN (bỏ dấu gạch ngang và khoảng trắng)
         String cleanISBN = isbn.replaceAll("[\\-\\s]", "");
         
         try {
-            // Tạo URL với query parameter
-            String encodedISBN = URLEncoder.encode("isbn:" + cleanISBN, StandardCharsets.UTF_8.toString());
+            String encodedISBN = URLEncoder.encode("isbn:" + cleanISBN, StandardCharsets.UTF_8.toString()); 
             String urlString = BASE_URL + "?q=" + encodedISBN + "&key=" + API_KEY;
             
             URL url = URI.create(urlString).toURL();
@@ -47,7 +45,6 @@ public class GoogleBooksService {
                 return null;
             }
             
-            // Đọc response
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
@@ -72,18 +69,15 @@ public class GoogleBooksService {
         try {
             JSONObject root = new JSONObject(jsonResponse);
             
-            // Kiểm tra xem có kết quả không
             if (!root.has("items") || root.getJSONArray("items").length() == 0) {
                 return null;
             }
             
-            // Lấy item đầu tiên (thường là kết quả chính xác nhất)
             JSONObject item = root.getJSONArray("items").getJSONObject(0);
             JSONObject volumeInfo = item.getJSONObject("volumeInfo");
             
             BookInfo bookInfo = new BookInfo();
             
-            // Lấy thông tin cơ bản
             if (volumeInfo.has("title")) {
                 bookInfo.title = volumeInfo.getString("title");
             }
@@ -104,7 +98,6 @@ public class GoogleBooksService {
             
             if (volumeInfo.has("publishedDate")) {
                 String publishedDate = volumeInfo.getString("publishedDate");
-                // Trích xuất năm từ ngày xuất bản (format có thể là YYYY hoặc YYYY-MM-DD)
                 try {
                     bookInfo.year = Integer.parseInt(publishedDate.substring(0, 4));
                 } catch (Exception e) {
@@ -134,8 +127,7 @@ public class GoogleBooksService {
             if (volumeInfo.has("language")) {
                 bookInfo.language = volumeInfo.getString("language");
             }
-            
-            // Lấy ISBN từ industryIdentifiers
+
             if (volumeInfo.has("industryIdentifiers")) {
                 JSONArray identifiers = volumeInfo.getJSONArray("industryIdentifiers");
                 for (int i = 0; i < identifiers.length(); i++) {
