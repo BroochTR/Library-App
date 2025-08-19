@@ -6,14 +6,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * Giao diện chính cho Hệ thống Quản lý Thư viện
- * Minh họa giao diện Swing với layout chuyên nghiệp
+ * Khung giao diện chính cho Hệ thống Quản lý Thư viện
  */
 public class MainFrame extends JFrame {
     private Library library;
     private JTabbedPane tabbedPane;
     
-    // Các Panel
+    // Các panel
     private DocumentPanel documentPanel;
     private UserPanel userPanel;
     private LoanPanel loanPanel;
@@ -26,11 +25,11 @@ public class MainFrame extends JFrame {
     }
     
     private void initializeGUI() {
-        setTitle("Library Management System - Modern Edition");
+        setTitle("Hệ thống Quản lý Thư viện - Phiên bản Hiện đại");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         
-        // Thiết lập giao diện hiện đại
+        // Thiết lập giao diện hiện đại 
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -43,31 +42,22 @@ public class MainFrame extends JFrame {
             e.printStackTrace();
         }
         
-        // Thiết lập màu nền
         getContentPane().setBackground(UITheme.BACKGROUND_PRIMARY);
         
-        // Tạo header với style hiện đại
         createHeader();
         
-        // Tạo thanh menu
         createMenuBar();
         
-        // Tạo nội dung chính với các tab
         createTabbedPane();
         
-        // Thêm các component vào frame
         add(tabbedPane, BorderLayout.CENTER);
         
-        // Tạo thanh trạng thái
         createStatusBar();
         
-        // Thiết lập thuộc tính frame
         setSize(1400, 900);
         setLocationRelativeTo(null);
         setMinimumSize(new Dimension(1200, 800));
         
-        // Thiết lập icon ứng dụng (tùy chọn)
-        // setIconImage(createApplicationIcon());
     }
     
     private void createHeader() {
@@ -75,7 +65,6 @@ public class MainFrame extends JFrame {
         headerPanel.setBackground(UITheme.PRIMARY_COLOR);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_MEDIUM, UITheme.PADDING_LARGE, UITheme.PADDING_MEDIUM, UITheme.PADDING_LARGE));
         
-        // Phần tiêu đề
         JLabel titleLabel = new JLabel("LIBRARY MANAGEMENT SYSTEM");
         titleLabel.setFont(UITheme.FONT_TITLE);
         titleLabel.setForeground(Color.WHITE);
@@ -84,10 +73,8 @@ public class MainFrame extends JFrame {
         titlePanel.setOpaque(false);
         titlePanel.add(titleLabel, BorderLayout.NORTH);
         
-        // Phần thống kê
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         statsPanel.setOpaque(false);
-        
         
         headerPanel.add(titlePanel, BorderLayout.WEST);
         headerPanel.add(statsPanel, BorderLayout.EAST);
@@ -100,7 +87,6 @@ public class MainFrame extends JFrame {
         menuBar.setBackground(UITheme.BACKGROUND_CARD);
         menuBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UITheme.BORDER_COLOR));
         
-        // Menu File
         JMenu fileMenu = new JMenu(" File ");
         fileMenu.setFont(UITheme.FONT_BODY);
         fileMenu.setMnemonic('F');
@@ -119,7 +105,6 @@ public class MainFrame extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
         
-        // Menu View
         JMenu viewMenu = new JMenu(" View ");
         viewMenu.setFont(UITheme.FONT_BODY);
         viewMenu.setMnemonic('V');
@@ -157,34 +142,29 @@ public class MainFrame extends JFrame {
         tabbedPane.setForeground(UITheme.TEXT_PRIMARY);
         tabbedPane.setBorder(BorderFactory.createEmptyBorder(UITheme.PADDING_SMALL, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM, UITheme.PADDING_MEDIUM));
         
-        // Tạo các panel
         documentPanel = new DocumentPanel(library);
         userPanel = new UserPanel(library);
         loanPanel = new LoanPanel(library);
         reviewPanel = new ReviewPanel(library);
         statisticsPanel = new StatisticsPanel(library);
         
-        // Thêm các panel vào tab với style hiện đại
         tabbedPane.addTab("  Documents  ", null, documentPanel, "Quản lý sách và tài liệu");
         tabbedPane.addTab("  Users  ", null, userPanel, "Quản lý thành viên thư viện");
         tabbedPane.addTab("  Loans  ", null, loanPanel, "Xử lý mượn và trả sách");
         tabbedPane.addTab("  Reviews  ", null, reviewPanel, "Đánh giá và nhận xét");
         tabbedPane.addTab("  Statistics  ", null, statisticsPanel, "Thống kê và báo cáo");
         
-        // Tạo style cho các tab
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             tabbedPane.setBackgroundAt(i, UITheme.BACKGROUND_CARD);
             tabbedPane.setForegroundAt(i, UITheme.TEXT_SECONDARY);
         }
         
-        // Thiết lập listener cho tab để refresh data và cập nhật style
         tabbedPane.addChangeListener(e -> {
             Component selectedComponent = tabbedPane.getSelectedComponent();
             if (selectedComponent instanceof RefreshablePanel) {
                 ((RefreshablePanel) selectedComponent).refreshData();
             }
             
-            // Cập nhật style cho tab được chọn
             int selectedIndex = tabbedPane.getSelectedIndex();
             for (int i = 0; i < tabbedPane.getTabCount(); i++) {
                 if (i == selectedIndex) {
@@ -201,29 +181,26 @@ public class MainFrame extends JFrame {
         statusBar.setBorder(new EmptyBorder(5, 10, 5, 10));
         statusBar.setBackground(new Color(240, 240, 240));
         
-        JLabel statusLabel = new JLabel("Ready - Library Management System");
+        JLabel statusLabel = new JLabel("Sẵn sàng - Hệ thống Quản lý Thư viện");
         statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
         statusBar.add(statusLabel);
         
         add(statusBar, BorderLayout.SOUTH);
     }
     
-
-    
     private void resetLibrary() {
         int result = JOptionPane.showConfirmDialog(
             this,
-            "Are you sure you want to reset the library? All data will be lost.",
+            "Bạn có chắc muốn reset thư viện? Tất cả dữ liệu sẽ bị mất.",
             "Reset Library",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE
         );
         
         if (result == JOptionPane.YES_OPTION) {
-            // Reset thư viện (tạo instance mới)
             library = Library.getInstance();
             refreshAllPanels();
-            JOptionPane.showMessageDialog(this, "Library has been reset. Database is now empty.");
+            JOptionPane.showMessageDialog(this, "Thư viện đã được reset. Cơ sở dữ liệu hiện trống.");
         }
     }
     
@@ -236,26 +213,26 @@ public class MainFrame extends JFrame {
     }
     
     private void showAboutDialog() {
-        String message = "LIBRARY MANAGEMENT SYSTEM\n" +
-            "Version 1.0.0 - Modern Edition\n\n" +
-            "Developed with Java Swing\n" +
-            "Demonstrates OOP Principles:\n" +
-            "✓ Inheritance (Document → Book)\n" +
-            "✓ Polymorphism (Different implementations)\n" +
-            "✓ Encapsulation (Private fields, public methods)\n" +
-            "✓ Abstraction (Abstract Document class)\n\n" +
-            "Features:\n" +
-            "• Document Management\n" +
-            "• User Management\n" +
-            "• Loan Tracking\n" +
-            "• Review System\n" +
-            "• Statistics & Reports\n" +
-            "• Google Books API Integration\n";
+        String message = "HỆ THỐNG QUẢN LÝ THƯ VIỆN\n" +
+            "Phiên bản 1.0.0 - Bản Hiện đại\n\n" +
+            "Phát triển với Java Swing\n" +
+            "Minh họa các nguyên lý OOP:\n" +
+            "✓ Kế thừa (Document → Book)\n" +
+            "✓ Đa hình (Các cách triển khai khác nhau)\n" +
+            "✓ Đóng gói (Trường private, phương thức public)\n" +
+            "✓ Trừu tượng (Lớp trừu tượng Document)\n\n" +
+            "Chức năng:\n" +
+            "• Quản lý tài liệu\n" +
+            "• Quản lý người dùng\n" +
+            "• Quản lý mượn trả\n" +
+            "• Hệ thống đánh giá\n" +
+            "• Thống kê & báo cáo\n" +
+            "• Tích hợp Google Books API\n";
         
         JOptionPane.showMessageDialog(
             this,
             message,
-            "About Library Management System",
+            "Giới thiệu Hệ thống Quản lý Thư viện",
             JOptionPane.INFORMATION_MESSAGE
         );
     }
@@ -263,7 +240,6 @@ public class MainFrame extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Thử thiết lập Nimbus look and feel
                 for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                     if ("Nimbus".equals(info.getName())) {
                         UIManager.setLookAndFeel(info.getClassName());
@@ -277,4 +253,4 @@ public class MainFrame extends JFrame {
             new MainFrame().setVisible(true);
         });
     }
-} 
+}
