@@ -12,6 +12,11 @@ import java.util.List;
  */
 public class MySQLUserRepository implements UserRepository {
     
+    /**
+     * Lưu một người dùng mới vào cơ sở dữ liệu
+     * @param user đối tượng User cần lưu
+     * @return true nếu lưu thành công, false nếu thất bại
+     */
     @Override
     public boolean save(User user) {
         String sql = "INSERT INTO users (id, name, email, phone, address, registration_date, " +
@@ -38,6 +43,11 @@ public class MySQLUserRepository implements UserRepository {
         }
     }
     
+    /**
+     * Tìm người dùng theo ID
+     * @param id mã người dùng
+     * @return đối tượng User nếu tìm thấy, null nếu không
+     */
     @Override
     public User findById(String id) {
         String sql = "SELECT * FROM users WHERE id = ?";
@@ -49,9 +59,7 @@ public class MySQLUserRepository implements UserRepository {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-                User user = mapResultSetToUser(rs);
-                // Tải thể loại yêu thích
-                user.setFavoriteGenres(findFavoriteGenres(id));
+                User user = mapResultSetToUser(rs);               
                 return user;
             }
         } catch (SQLException e) {
@@ -60,6 +68,10 @@ public class MySQLUserRepository implements UserRepository {
         return null;
     }
     
+    /**
+     * Lấy tất cả người dùng
+     * @return danh sách tất cả người dùng, sắp xếp theo tên
+     */
     @Override
     public List<User> findAll() {
         String sql = "SELECT * FROM users ORDER BY name";
@@ -69,23 +81,21 @@ public class MySQLUserRepository implements UserRepository {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             
-            // Đầu tiên, tải tất cả người dùng mà không có thể loại yêu thích
             while (rs.next()) {
                 User user = mapResultSetToUser(rs);
                 users.add(user);
             }
         } catch (SQLException e) {
             System.err.println("Error finding all users: " + e.getMessage());
-        }
-        
-        // Sau đó, tải thể loại yêu thích cho từng người dùng riêng biệt
-        for (User user : users) {
-            user.setFavoriteGenres(findFavoriteGenres(user.getId()));
-        }
-        
+        }        
         return users;
     }
     
+    /**
+     * Cập nhật thông tin người dùng
+     * @param user đối tượng User cần cập nhật
+     * @return true nếu cập nhật thành công, false nếu thất bại
+     */
     @Override
     public boolean update(User user) {
         String sql = "UPDATE users SET name = ?, email = ?, phone = ?, address = ?, " +
@@ -111,36 +121,31 @@ public class MySQLUserRepository implements UserRepository {
         }
     }
     
+    /**
+     * Xóa người dùng theo ID
+     * @param id mã người dùng cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
+     */
     @Override
     public boolean delete(String id) {
-        try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false);
+        String sql = "DELETE FROM users WHERE id = ?";
+        
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             
-            try {
-                // Xóa thể loại yêu thích trước
-                clearFavoriteGenres(id);
-                
-                // Xóa người dùng
-                String sql = "DELETE FROM users WHERE id = ?";
-                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setString(1, id);
-                    boolean result = stmt.executeUpdate() > 0;
-                    
-                    conn.commit();
-                    return result;
-                }
-            } catch (SQLException e) {
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(true);
-            }
+            stmt.setString(1, id);
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error deleting user: " + e.getMessage());
             return false;
         }
     }
     
+    /**
+     * Tìm người dùng theo tên (tìm kiếm gần đúng)
+     * @param name tên người dùng cần tìm (có thể là một phần của tên)
+     * @return danh sách người dùng có tên chứa chuỗi tìm kiếm, sắp xếp theo tên
+     */
     @Override
     public List<User> findByName(String name) {
         String sql = "SELECT * FROM users WHERE LOWER(name) LIKE LOWER(?) ORDER BY name";
@@ -152,7 +157,6 @@ public class MySQLUserRepository implements UserRepository {
             stmt.setString(1, "%" + name + "%");
             ResultSet rs = stmt.executeQuery();
             
-            // Đầu tiên, tải tất cả người dùng mà không có thể loại yêu thích
             while (rs.next()) {
                 User user = mapResultSetToUser(rs);
                 users.add(user);
@@ -160,15 +164,14 @@ public class MySQLUserRepository implements UserRepository {
         } catch (SQLException e) {
             System.err.println("Error finding users by name: " + e.getMessage());
         }
-        
-        // Sau đó, tải thể loại yêu thích cho từng người dùng riêng biệt
-        for (User user : users) {
-            user.setFavoriteGenres(findFavoriteGenres(user.getId()));
-        }
-        
         return users;
     }
     
+    /**
+     * Lấy danh sách thể loại yêu thích của người dùng
+     * @param userId mã người dùng
+     * @return danh sách thể loại yêu thích, sắp xếp theo tên thể loại
+     */
     @Override
     public List<String> findFavoriteGenres(String userId) {
         String sql = "SELECT genre FROM user_favorite_genres WHERE user_id = ? ORDER BY genre";
@@ -189,6 +192,12 @@ public class MySQLUserRepository implements UserRepository {
         return genres;
     }
     
+    /**
+     * Thêm một thể loại yêu thích cho người dùng
+     * @param userId mã người dùng
+     * @param genre thể loại cần thêm
+     * @return true nếu thêm thành công, false nếu thất bại hoặc đã tồn tại
+     */
     @Override
     public boolean addFavoriteGenre(String userId, String genre) {
         String sql = "INSERT IGNORE INTO user_favorite_genres (user_id, genre) VALUES (?, ?)";
@@ -206,6 +215,12 @@ public class MySQLUserRepository implements UserRepository {
         }
     }
     
+    /**
+     * Xóa một thể loại yêu thích của người dùng
+     * @param userId mã người dùng
+     * @param genre thể loại cần xóa
+     * @return true nếu xóa thành công, false nếu thất bại
+     */
     @Override
     public boolean removeFavoriteGenre(String userId, String genre) {
         String sql = "DELETE FROM user_favorite_genres WHERE user_id = ? AND genre = ?";
@@ -223,6 +238,11 @@ public class MySQLUserRepository implements UserRepository {
         }
     }
     
+    /**
+     * Xóa tất cả thể loại yêu thích của người dùng
+     * @param userId mã người dùng
+     * @return true nếu xóa thành công, false nếu thất bại
+     */
     @Override
     public boolean clearFavoriteGenres(String userId) {
         String sql = "DELETE FROM user_favorite_genres WHERE user_id = ?";
@@ -231,7 +251,7 @@ public class MySQLUserRepository implements UserRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setString(1, userId);
-            stmt.executeUpdate(); // Luôn trả về true, ngay cả khi không có bản ghi nào bị xóa
+            stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
             System.err.println("Error clearing favorite genres: " + e.getMessage());
@@ -241,6 +261,9 @@ public class MySQLUserRepository implements UserRepository {
     
     /**
      * Phương thức hỗ trợ để ánh xạ ResultSet thành đối tượng User
+     * @param rs ResultSet từ câu truy vấn SQL
+     * @return đối tượng User được tạo từ dữ liệu ResultSet
+     * @throws SQLException nếu có lỗi khi đọc dữ liệu từ ResultSet
      */
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
@@ -263,7 +286,6 @@ public class MySQLUserRepository implements UserRepository {
         user.setActive(rs.getBoolean("is_active"));
         user.setMaxBorrowLimit(rs.getInt("max_borrow_limit"));
         
-        // borrowedDocumentIds sẽ được điền bởi các phương thức khác nếu cần
         user.setBorrowedDocumentIds(new ArrayList<>());
         user.setFavoriteGenres(new ArrayList<>());
         
