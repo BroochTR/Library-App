@@ -5,8 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
- * lop LoanTransaction dung de theo doi viec vay muon va tra tai lieu nguoi dung
- * tu do the hien duoc 1 trong nhung quy tac cua OOP: dong goi (Encapsulation)
+ * Lớp LoanTransaction để theo dõi việc mượn và trả tài liệu
  */
 public class LoanTransaction {
     private String id;
@@ -21,13 +20,13 @@ public class LoanTransaction {
     private int maxRenewals;
     
     /**
-     * Liet ke cac trang thai giao dich
+     * Enum cho trạng thái giao dịch
      */
     public enum TransactionStatus {
-        ACTIVE,      // Hien dang vay
-        RETURNED,    // Tra dung han
-        OVERDUE,     // Qua han
-        RENEWED      // Gia han thoi gian tra no
+        ACTIVE,
+        RETURNED,
+        OVERDUE,
+        RENEWED
     }
     
     /**
@@ -47,7 +46,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Constructor the hien ngay thang cu the
+     * Constructor với ngày cụ thể
      */
     public LoanTransaction(String id, String userId, String documentId, 
                           LocalDate borrowDate, LocalDate dueDate) {
@@ -64,18 +63,18 @@ public class LoanTransaction {
     }
     
     /**
-     * constructor mac dinh
+     * Constructor mặc định
      */
     public LoanTransaction() {
         this.borrowDate = LocalDate.now();
-        this.dueDate = borrowDate.plusDays(14); // Mac dinh 14 ngay
+        this.dueDate = borrowDate.plusDays(14);
         this.status = TransactionStatus.ACTIVE;
         this.fineAmount = 0.0;
         this.renewalCount = 0;
         this.maxRenewals = 2;
     }
     
-    // Getters and Setters
+    //Getter và Setter
     public String getId() {
         return id;
     }
@@ -157,7 +156,7 @@ public class LoanTransaction {
     }
     
     /**
-     * kiem tra xem viec tra no co bi qua han
+     * Kiểm tra xem lượt mượn có quá hạn không
      */
     public boolean isOverdue() {
         if (status == TransactionStatus.RETURNED) {
@@ -167,14 +166,14 @@ public class LoanTransaction {
     }
     
     /**
-     * ngay den han tra (se co gia tri am neu da qua han) 
+     * Lấy số ngày còn lại đến hạn (số âm nếu quá hạn)
      */
     public long getDaysUntilDue() {
         return ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
     }
     
     /**
-     * Dem so ngay qua han ( = 0 neu nhu khong no)
+     * Lấy số ngày quá hạn (0 nếu chưa quá hạn)
      */
     public long getDaysOverdue() {
         if (!isOverdue()) {
@@ -184,7 +183,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Tinh tien phat dua tren so ngay qua han
+     * Tính tiền phạt dựa trên số ngày quá hạn
      */
     public double calculateFine(double dailyFineRate) {
         long daysOverdue = getDaysOverdue();
@@ -192,7 +191,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Gia han khoang no
+     * Gia hạn lượt mượn
      */
     public boolean renew(int additionalDays) {
         if (renewalCount < maxRenewals && status == TransactionStatus.ACTIVE) {
@@ -205,7 +204,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Tra lai tai lieu
+     * Trả lại tài liệu
      */
     public void returnDocument() {
         this.returnDate = LocalDate.now();
@@ -217,7 +216,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Kiem tra xem viec gia han co duoc chap nhan
+     * Kiểm tra xem có được phép gia hạn không
      */
     public boolean canRenew() {
         return renewalCount < maxRenewals && 
@@ -225,7 +224,7 @@ public class LoanTransaction {
     }
     
     /**
-     * Chuyen thoi han tra no thanh ngay
+     * Lấy thời gian mượn tính bằng ngày
      */
     public long getLoanDuration() {
         LocalDate endDate = returnDate != null ? returnDate : LocalDate.now();
@@ -250,4 +249,4 @@ public class LoanTransaction {
         return String.format("LoanTransaction[id=%s, user=%s, document=%s, status=%s]", 
                            id, userId, documentId, status);
     }
-} 
+}
