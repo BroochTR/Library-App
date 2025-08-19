@@ -1,5 +1,3 @@
-package com.library.model;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -201,3 +199,4 @@ public class Review {
                            id, userId, documentId, rating, helpfulVotes);
     }
 }
+
