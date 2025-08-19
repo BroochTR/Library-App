@@ -4,35 +4,34 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Lop Review (danh gia) cho nguoi dung danh gia va nhan xet
- * tu do the hien duoc 1 trong nhung quy tac cua OOP: dong goi (Encapsulation)
+ * Lớp Review cho đánh giá và bình luận của người dùng trên tài liệu
  */
 public class Review {
     private String id;
     private String userId;
     private String documentId;
-    private int rating; // 1-5 stars
+    private int rating;
     private String comment;
     private LocalDateTime reviewDate;
     private int helpfulVotes;
     private boolean isRecommended;
     
     /**
-     * Constructor 4 Review
+     * Constructor cho Review
      */
     public Review(String id, String userId, String documentId, int rating, String comment) {
         this.id = id;
         this.userId = userId;
         this.documentId = documentId;
-        this.setRating(rating); // Su dung setter de xac thuc
+        this.setRating(rating);
         this.comment = comment;
         this.reviewDate = LocalDateTime.now();
         this.helpfulVotes = 0;
-        this.isRecommended = rating >= 4; // Tu dong danh gia 4-5 sao
+        this.isRecommended = rating >= 4;
     }
     
     /**
-     * Constructor mac dinh
+     * Constructor mặc định
      */
     public Review() {
         this.reviewDate = LocalDateTime.now();
@@ -41,7 +40,7 @@ public class Review {
         this.comment = "";
     }
     
-    // Getters and Setters
+    //Getter và Setter
     public String getId() {
         return id;
     }
@@ -70,6 +69,11 @@ public class Review {
         return rating;
     }
     
+    /**
+     * Đặt đánh giá số sao cho review
+     * @param rating điểm đánh giá từ 1 đến 5 sao
+     * @throws IllegalArgumentException nếu rating không nằm trong khoảng 1-5
+     */
     public void setRating(int rating) {
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
@@ -99,7 +103,7 @@ public class Review {
     }
     
     public void setHelpfulVotes(int helpfulVotes) {
-        this.helpfulVotes = Math.max(0, helpfulVotes); // Dam bao khong phai gia tri am
+        this.helpfulVotes = Math.max(0, helpfulVotes);
     }
     
     public boolean isRecommended() {
@@ -111,14 +115,14 @@ public class Review {
     }
     
     /**
-     * Cong phieu hai long
+     * Thêm một lượt bình chọn hữu ích
      */
     public void addHelpfulVote() {
         this.helpfulVotes++;
     }
     
     /**
-     * Bo phieu hai long (neu co the)
+     * Gỡ một lượt bình chọn hữu ích 
      */
     public void removeHelpfulVote() {
         if (this.helpfulVotes > 0) {
@@ -127,7 +131,7 @@ public class Review {
     }
     
     /**
-     * Chuyen diem danh gia -> sao
+     * Lấy đánh giá dưới dạng chuỗi ngôi sao
      */
     public String getRatingAsStars() {
         StringBuilder stars = new StringBuilder();
@@ -142,37 +146,37 @@ public class Review {
     }
     
     /**
-     * Kiem tra xem review co nhan xet khong
+     * Kiểm tra xem đánh giá có bình luận không
      */
     public boolean hasComment() {
         return comment != null && !comment.trim().isEmpty();
     }
        
     /**
-     * Cap nhat noi dung nhan xet
+     * Cập nhật nội dung đánh giá
      */
     public void updateReview(int newRating, String newComment) {
         setRating(newRating);
         setComment(newComment);
-        this.reviewDate = LocalDateTime.now(); // Cap nhat ngay thang review
+        this.reviewDate = LocalDateTime.now();
     }
     
     /**
-     * Kiem tra xem neu danh gia la tich cuc hay khong
+     * Kiểm tra xem đánh giá có tích cực không (4-5 sao)
      */
     public boolean isPositive() {
         return rating >= 4;
     }
     
     /**
-     * Kiem tra xem neu danh gia la tieu cuc hay khong
+     * Kiểm tra xem đánh giá có tiêu cực không (1-2 sao)
      */
     public boolean isNegative() {
         return rating <= 2;
     }
     
     /**
-     * Kiem tra xem neu danh gia la trung binh hay khong
+     * Kiểm tra xem đánh giá có trung lập không (3 sao)
      */
     public boolean isNeutral() {
         return rating == 3;
@@ -196,4 +200,4 @@ public class Review {
         return String.format("Review[id=%s, user=%s, document=%s, rating=%d/5, helpful=%d]", 
                            id, userId, documentId, rating, helpfulVotes);
     }
-} 
+}
