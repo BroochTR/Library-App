@@ -1,5 +1,3 @@
-package com.library.repository;
-
 import com.library.model.LoanTransaction;
 import java.util.List;
 
