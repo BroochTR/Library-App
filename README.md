@@ -4,6 +4,8 @@ BTL-OOP-INT2204 60
 - Trần Trọng Thịnh: 33.3% 
 - Hoàng Đức Minh: 33.3%  
 - Đặng Hoàng Minh Nghĩa: 33.3%
+## Link video giới thiệu app:
+https://drive.google.com/file/d/1OhFKs-HRmaXgARzOeAQf5IaO_4U0ugBN/view?usp=sharing
 ## UML Diagram: 
 https://lucid.app/lucidchart/3aa52b9d-8b18-4c73-be65-1495eea71409/edit?viewport_loc=-3486%2C-2684%2C10194%2C4130%2C0_0&invitationId=inv_e23030b8-8f4a-457a-99d5-1692e5a9bdba
 ## 📚 Hệ Thống Quản Lý Thư Viện - Ứng Dụng Desktop Java
